@@ -1,0 +1,77 @@
+package model;
+
+import enums.Category;
+import enums.Months;
+
+public class Budget {
+    String budgetId, userId;
+    Category category;
+    Months month;
+
+
+
+    double monthlyLimit;
+
+    @Override
+    public String toString() {
+        return "Budget{" +
+                "budgetId='" + budgetId + '\'' +
+                ", userId='" + userId + '\'' +
+                ", month='" + month + '\'' +
+                ", category=" + category +
+                ", monthlyLimit=" + monthlyLimit +
+                '}';
+    }
+
+    public Budget(String budgetId, String userId, Months month, Category category, double monthlyLimit) {
+        this.budgetId = budgetId;
+        this.userId = userId;
+        this.month = month;
+        this.category = category;
+        this.monthlyLimit = monthlyLimit;
+    }
+    public double calculateRemaining(double spent){
+        return monthlyLimit - spent ;
+
+    }
+    public Months getMonth() {
+        return month;
+    }
+
+    public void setMonth(Months month) {
+        this.month = month;
+    }
+    //region Setter&Getters
+    public String getBudgetId() {
+        return budgetId;
+    }
+
+    public void setBudgetId(String budgetId) {
+        this.budgetId = budgetId;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    public double getMonthlyLimit() {
+        return monthlyLimit;
+    }
+
+    public void setMonthlyLimit(double monthlyLimit) {
+        this.monthlyLimit = monthlyLimit;
+    }
+    //endregion
+}
