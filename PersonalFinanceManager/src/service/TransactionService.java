@@ -6,15 +6,19 @@ import model.Transaction;
 
 public class TransactionService {
 
-     int transactionCount = 0;
-     static int transactionID = 1;
+    public int transactionCount = 0;
+
+    public static void setTransactionID(int transactionID) {
+        TransactionService.transactionID = transactionID;
+    }
+
+    static int transactionID = 1;
 
     public static int getTransactionID() {
         return transactionID;
     }
 
     public void addTransaction(Transaction t, Transaction[] transactions) {
-        transactionID++;
         t.setTransactionId(transactionID);
         transactionID++;
 

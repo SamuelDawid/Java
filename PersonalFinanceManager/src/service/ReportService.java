@@ -13,13 +13,16 @@ public class ReportService {
 
         for (Transaction t : trans){
             if(t != null){
-                // calculate totalExpenses (filter EXPENSE type),
-                if(t.getType() == TransactionType.EXPENSE){
-                    totalExpenses+= t.getAmount();
-                    // calculate totalIncome (filter INCOME type),
-                }else if(t.getType() == TransactionType.INCOME){
-                    totalIncome+= t.getAmount();
+                if(t.getUserId().equals(userId) && t.getDate().split("-")[1].equals(month.getNumber())){
+                    // calculate totalExpenses (filter EXPENSE type),
+                    if(t.getType() == TransactionType.EXPENSE){
+                        totalExpenses+= t.getAmount();
+                        // calculate totalIncome (filter INCOME type),
+                    }else if(t.getType() == TransactionType.INCOME){
+                        totalIncome+= t.getAmount();
+                    }
                 }
+
             }
         }
 

@@ -6,10 +6,18 @@ import model.Budget;
 
 public class BudgetService {
     //Fields:
-     int budgetCount = 0;
+     public int budgetCount = 0;
 
     static int budgetID;
-    //Methods:
+
+    public static int getBudgetID() {
+        return budgetID;
+    }
+
+    public static void setBudgetID(int budgetID) {
+        BudgetService.budgetID = budgetID;
+    }
+//Methods:
     //- setBudget(Budget b)
 
     public void setBudget(Budget b,Budget[] budgets){
@@ -49,6 +57,4 @@ public class BudgetService {
         return true;
 
     }
-
-
 }

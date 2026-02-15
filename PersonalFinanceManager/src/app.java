@@ -22,7 +22,7 @@ public class app {
         User currentUser = new User();
         int currentUsersNumber = 0;
         //main() method:
-        //- Initialize services
+        //region InitializeServices
         Scanner scanner = new Scanner(System.in);
 
         MenuManager UI = new MenuManager();
@@ -30,7 +30,8 @@ public class app {
         TransactionService transactionService = new TransactionService();
         ReportService reportService = new ReportService();
         FileService fileService = new FileService();
-        //- Load data from files
+        //endregion
+        //region LoadData
         User[] allUsers = new User[100];
         int[] userCount = new int[1];
         allUsers = fileService.loadUsers("data/users.txt",userCount);
@@ -39,9 +40,28 @@ public class app {
         int[] transCount = new int[1];
         allTransactions = fileService.loadTransactions("data/transactions.txt",transCount);
 
+        // find biggest id
+        int highestTransactionID = 0;
+        for(Transaction t : allTransactions){
+
+            if( t!= null && t.getTransactionId() > highestTransactionID)
+                highestTransactionID = t.getTransactionId();
+        }
+        TransactionService.setTransactionID(highestTransactionID + 1);
+        transactionService.transactionCount = transCount[0];
+
         Budget[] allBudgets = new Budget[100];
         int[] budgetsCount = new int[1];
         allBudgets = fileService.loadBudgets("data/bud.txt",budgetsCount);
+        int highestBudgetID = 0;
+        for(Budget b : allBudgets){
+
+            if( b!= null && Integer.parseInt(b.getBudgetId()) > highestBudgetID)
+                highestBudgetID = Integer.parseInt(b.getBudgetId());
+        }
+        BudgetService.setBudgetID(highestBudgetID + 1);
+        budgetService.budgetCount = budgetsCount[0];
+        //endregion
         //region UserHandling
         boolean userFound = false;
         while (!userFound) {
@@ -91,11 +111,6 @@ public class app {
         while (true) {
             UI.displayMainMenu();
             String input = scanner.nextLine();
-            //  1. Add Transaction,
-            //  2. View Transactions,\s
-            //  3. Set Budget,\s
-            //  4. View Reports,\s
-            //  5. Save & Exit.
 
             switch (input) {
                 //region TransactionRegion
@@ -141,7 +156,7 @@ public class app {
                                 System.out.println("Amount:");
                                 String choseAmount = scanner.nextLine();
 
-                                System.out.println("Date (DD-MM-YYYY):");
+                                System.out.println("Date (YYYY-MM-DD):");
                                 String choseDate = scanner.nextLine();
 
                                 System.out.println("Description:");
@@ -247,7 +262,7 @@ public class app {
                             break;
                         case "4":
                            // Back to Main Menu
-                            return;
+                            break;
                         default:
                             System.out.println("Incorrect choice");
                             break;
@@ -287,7 +302,7 @@ public class app {
                             break;
                         //                4. Back to Main Menu
                         case "4":
-                            return;
+                            break;
                     }
                     break;
                     //endregion
@@ -302,7 +317,5 @@ public class app {
             }
 
         }
-        //- Handle user choices
-        //- Save data on exit
     }
 }
