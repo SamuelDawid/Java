@@ -36,5 +36,4 @@ public enum Category {
     public void setType(TransactionType type) {
         this.type = type;
     }
-
 }
