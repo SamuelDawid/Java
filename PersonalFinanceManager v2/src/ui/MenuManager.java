@@ -75,7 +75,7 @@ public class MenuManager {
     public void displayReportMenu() {
 
         System.out.println("""
-                === Budget Menu ===
+                === Report Menu ===
                 1. Generate Monthly Report
                 2. Print Category Breakdown
                 3. Print Year To Date Summary

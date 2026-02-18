@@ -4,7 +4,7 @@ import enums.Category;
 import enums.Months;
 import model.Transaction;
 
-import java.util.ArrayList;
+import java.util.*;
 
 public class TransactionService {
 
@@ -14,7 +14,10 @@ public class TransactionService {
     }
 
     static int transactionID = 1;
-
+    static HashSet<Integer> trackTransactionID = new HashSet<>();
+    public TreeSet<Transaction> sortedTransactions  = new TreeSet<>();
+    Comparator<Transaction> byDate = Comparator.comparing(Transaction::getDate);
+    public TreeSet<Transaction> sortedByDate = new TreeSet<>(byDate);
     public static int getTransactionID() {
         return transactionID;
     }
@@ -22,11 +25,9 @@ public class TransactionService {
 
     public ArrayList<Transaction> getTransactionsByUser(String userId,ArrayList<Transaction> transactions) {
         ArrayList<Transaction> transactionsByID = new ArrayList<>();
-        int index = 0;
         for (Transaction transaction : transactions) {
             if (transaction != null && transaction.getUserId().equals(userId)) {
-                transactionsByID.set(index, transaction);
-                index++;
+                transactionsByID.add(transaction);
             }
         }
         return transactionsByID;
@@ -73,5 +74,21 @@ public class TransactionService {
     }
     transactions.remove(index);
     }
+
+    public int generateTransactionID(){
+        // i want this to generate a random number between 100 000 000 and 999 999 999
+
+        while (true){
+            var rnd = rndTransGen();
+            if(!trackTransactionID.contains(rnd)){
+               trackTransactionID.add(rnd);
+               return rnd;
+            }
+        }
+    }
+    int rndTransGen(){
+        return new Random().nextInt(100000000,999999999);
+    }
+
 
 }

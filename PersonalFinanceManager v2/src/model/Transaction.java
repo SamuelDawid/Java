@@ -3,7 +3,7 @@ package model;
 import enums.Category;
 import enums.TransactionType;
 
-public class Transaction {
+public class Transaction implements Comparable<Transaction> {
     int transactionId;
     String description,userId;
     TransactionType type ;
@@ -14,6 +14,7 @@ public class Transaction {
     public Transaction(){
 
     }
+
     public Transaction(int transactionId, String description, String userId, TransactionType type, Category category, double amount, String date) {
         this.transactionId = transactionId;
         this.description = description;
@@ -28,15 +29,8 @@ public class Transaction {
 
     @Override
     public String toString() {
-        return "Transaction{" +
-                "transactionId='" + transactionId + '\'' +
-                ", description='" + description + '\'' +
-                ", userId='" + userId + '\'' +
-                ", type=" + type +
-                ", category=" + category +
-                ", amount=" + amount +
-                ", date(format: DD-MM-YYYY)='" + date + '\'' +
-                '}';
+        return String.format("[%d] %s | %s | %s | %.2f | %s",
+                transactionId, date, type, category.getDisplayName(), amount, description);
     }
 
     public int getTransactionId() {
@@ -93,5 +87,10 @@ public class Transaction {
 
     public void setDate(String date) {
         this.date = date;
+    }
+
+    @Override
+    public int compareTo(Transaction o) {
+        return Double.compare(amount,o.getAmount());
     }
 }

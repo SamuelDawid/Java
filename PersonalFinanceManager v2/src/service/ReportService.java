@@ -63,4 +63,10 @@ public class ReportService {
         System.out.println(totalIncome > totalExpenses ? "Total Savings for " + year+": " + (totalIncome - totalExpenses) : "no Savings this year :c");
 
     }
+    public double calculateCompoundInterest(double principal, double rate, int years){
+         if(years == 0){
+             return principal;
+         }else
+             return calculateCompoundInterest(principal*(1+rate),rate,years -1);
+    }
 }
