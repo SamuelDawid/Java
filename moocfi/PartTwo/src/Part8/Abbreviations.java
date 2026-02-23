@@ -5,10 +5,10 @@ import java.util.HashMap;
 public class Abbreviations {
     private HashMap<String, String > map;
 
+
     public Abbreviations() {
         this.map = new HashMap<>();
     }
-
     public void addAbbreviation(String abbreviation, String explanation){
     map.put(abbreviation,explanation);
 
@@ -20,6 +20,7 @@ public class Abbreviations {
     for (String s : map.keySet()){
         if(s.equals(abbreviation)){
             return map.get(s);
+
         }
     }
     return null;
