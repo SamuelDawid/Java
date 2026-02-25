@@ -1,5 +1,7 @@
 package ui;
 
+import enums.Months;
+
 public class MenuManager {
 
     //Methods:
@@ -7,8 +9,8 @@ public class MenuManager {
         System.out.println("Main Menu");
         System.out.println("""
                 1. Add Transaction, \s
-                2. View Transactions,\s
-                3. Set Budget,\s
+                2. View Transactions options,\s
+                3. View Budget options,\s
                 4. View Reports,\s
                 5. Save & Exit.""");
     }
@@ -49,15 +51,8 @@ public class MenuManager {
     }
 
     public void displayMonthsOfYear() {
-        System.out.println("""
-                1. January  | 7. July\s
-                2. February | 8. August \s
-                3. March    | 9. September\s
-                4. April    | 10. October\s
-                5. May      | 11. November\s
-                6. June     | 12. December\s
-                 type month:
-                """);
+        for(Months month : Months.values())
+            System.out.println(month);
     }
 
     public void displayBudgetMenu() {
@@ -89,6 +84,16 @@ public class MenuManager {
         System.out.println("""
                 1.Select Existing User, \s
                 2.Add New User
+                """);
+    }
+    public void displayTransactionsMenu(){
+        System.out.println("=== Transactions Menu ===");
+        System.out.println("""
+                1.View all transactions, \s
+                2.View only FOOD transactions \s
+                3.View only transactions over $50
+                4.View only transactions from specific month
+                5.View only transactions from last 3 months
                 """);
     }
 

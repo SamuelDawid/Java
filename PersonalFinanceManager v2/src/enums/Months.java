@@ -14,7 +14,7 @@ public enum Months {
     NOVEMBER("11"),
     DECEMBER("12");
 
-    private String number;
+    private final String number;
 
     Months(String number) {
         this.number = number;
@@ -24,7 +24,8 @@ public enum Months {
         return number;
     }
 
-    public void setNumber(String number) {
-        this.number = number;
+    @Override
+    public String toString() {
+        return number + " " + name().charAt(0) + name().substring(1).toLowerCase();
     }
 }

@@ -29,6 +29,10 @@ public class BudgetService {
         budgetCount++;
 
     }
+    public Budget setBudget(){
+
+        return null;
+    }
    public Budget getBudget(String userId, Category cat, Months month,ArrayList<Budget> budgets){
 
         for(Budget b : budgets) {

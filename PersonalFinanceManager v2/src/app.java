@@ -1,3 +1,5 @@
+//region imports
+
 import enums.Category;
 import enums.Months;
 import enums.TransactionType;
@@ -5,56 +7,43 @@ import model.Budget;
 import model.MonthlyReport;
 import model.Transaction;
 import model.User;
-import service.BudgetService;
-import service.FileService;
-import service.ReportService;
-import service.TransactionService;
+import service.*;
 import ui.MenuManager;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.Scanner;
-import java.util.TreeSet;
-
+import java.util.function.Predicate;
+//endregion
 
 public class app {
-    static final int EXPENSE_COUNT = 7;
-
 
     public static void main(String[] args) {
-        User currentUser = new User();
-        int currentUsersNumber = 0;
-        //main() method:
-        //region InitializeServices
-        Scanner scanner = new Scanner(System.in);
 
-        MenuManager UI = new MenuManager();
-        BudgetService budgetService = new BudgetService();
-        TransactionService transactionService = new TransactionService();
-        ReportService reportService = new ReportService();
-        FileService fileService = new FileService();
+        //region InitializeServices
+        InitializeServices allServices = getInitializeServices();
         //endregion
         //region LoadData
-        ArrayList<User> allUsers = fileService.loadUsers("data/users.txt");
-        ArrayList<Transaction> allTransactions = fileService.loadTransactions("data/transactions.txt");
-        transactionService.sortedTransactions.addAll(allTransactions);
-        transactionService.sortedByDate.addAll(allTransactions);
-        ArrayList<Budget> allBudgets = fileService.loadBudgets("data/bud.txt");
+        LoadData loadAlldata = getLoadData(allServices);
+        IntializeServices services = new IntializeServices(loadAlldata.allUsers(), loadAlldata.allTransactions(), loadAlldata.allBudgets());
         //endregion
         //region UserHandling
         boolean userFound = false;
         while (!userFound) {
-            UI.displayUserMenu();
-            String userInput = scanner.nextLine();
+            allServices.UI().displayUserMenu();
+            String userInput = allServices.scanner().nextLine();
 
             switch (userInput) {
                 case "1":
                     System.out.println("provide userID");
-                    String userIDinput = scanner.nextLine();
+                    String userIDinput = allServices.scanner().nextLine();
 
-                    for (User u : allUsers) {
+                    for (User u : services.allUsers()) {
                         if (u != null && u.getUserId().equals(userIDinput)) {
-                            currentUser = u;
+                            allServices.userService.currentUser = u;
                             userFound = true;
                             System.out.println("User logged in.");
                             break;
@@ -64,20 +53,8 @@ public class app {
                         System.out.println("No user found!");
                     break;
                 case "2":
-
-                    System.out.println("Adding new User");
-                    System.out.println("First Name:");
-                    String firstName = scanner.nextLine();
-                    System.out.println("Last Name:");
-                    String lastName = scanner.nextLine();
-                    System.out.println("Email:");
-                    String email = scanner.nextLine();
-
-                    allUsers.add(new User(String.valueOf(currentUsersNumber + 100), firstName, lastName, email));
-                    System.out.println("Added : " + allUsers.get(currentUsersNumber + 100));
-                    currentUser = allUsers.getLast();
-                    currentUsersNumber++;
-
+                    services.allUsers.add(allServices.userService.createNewUser());
+                    System.out.println("Added : " + allServices.userService.currentUser);
                     userFound = true;
                     break;
                 default:
@@ -88,40 +65,40 @@ public class app {
         //endregion
         //- Display menu
         while (true) {
-            UI.displayMainMenu();
-            String input = scanner.nextLine();
+            allServices.UI().displayMainMenu();
+            String input = allServices.scanner().nextLine();
 
             switch (input) {
                 //region TransactionRegion
                 case "1":
-                    UI.displayTransactionMenu();
-                    String inputTransactionMenu = scanner.nextLine();
+                    allServices.UI().displayTransactionMenu();
+                    String inputTransactionMenu = allServices.scanner().nextLine();
                     if (!inputTransactionMenu.isEmpty()) {
                         if (inputTransactionMenu.equalsIgnoreCase("income") || inputTransactionMenu.equals("1")) {
                             // add income transaction.
-                            if (!currentUser.getUserId().isEmpty()) {
-                                UI.displayIncomeMenu();
-                                String choseIncomeType = scanner.nextLine();
+                            if (!allServices.userService.currentUser.getUserId().isEmpty()) {
+                                allServices.UI().displayIncomeMenu();
+                                String choseIncomeType = allServices.scanner().nextLine();
 
                                 System.out.println("Amount:");
-                                String choseAmount = scanner.nextLine();
+                                String choseAmount = allServices.scanner().nextLine();
 
                                 System.out.println("Date (YYYY-MM-DD):");
-                                String choseDate = scanner.nextLine();
+                                String choseDate = allServices.scanner().nextLine();
 
                                 System.out.println("Description:");
-                                String choseDescription = scanner.nextLine();
+                                String choseDescription = allServices.scanner().nextLine();
                                 Transaction newTransaction =
-                                        new Transaction(transactionService.generateTransactionID(),
+                                        new Transaction(allServices.transactionService().generateTransactionID(),
                                                 choseDescription,
-                                                currentUser.getUserId(),
+                                                allServices.userService.getUserId(),
                                                 TransactionType.INCOME,
                                                 Category.values()[Integer.parseInt(choseIncomeType) - 1],
                                                 Double.parseDouble(choseAmount),
                                                 choseDate);
-                                allTransactions.add(newTransaction);
-                                transactionService.sortedTransactions.add(newTransaction);
-                                transactionService.sortedByDate.add(newTransaction);
+                                services.allTransactions().add(newTransaction);
+                                allServices.transactionService().sortedTransactions.add(newTransaction);
+                                allServices.transactionService().sortedByDate.add(newTransaction);
 
                             } else {
                                 System.out.println("No current user logged in!");
@@ -130,30 +107,30 @@ public class app {
 
 
                         } else if (inputTransactionMenu.equalsIgnoreCase("expense") || inputTransactionMenu.equals("2")) {
-                            if (!currentUser.getUserId().isEmpty()) {
-                                UI.displayExpenseMenu();
-                                String choseIncomeType = scanner.nextLine();
+                            if (!allServices.userService.currentUser.getUserId().isEmpty()) {
+                                allServices.UI().displayExpenseMenu();
+                                String choseIncomeType = allServices.scanner().nextLine();
 
                                 System.out.println("Amount:");
-                                String choseAmount = scanner.nextLine();
+                                String choseAmount = allServices.scanner().nextLine();
 
                                 System.out.println("Date (YYYY-MM-DD):");
-                                String choseDate = scanner.nextLine();
+                                String choseDate = allServices.scanner().nextLine();
 
                                 System.out.println("Description:");
-                                String choseDescription = scanner.nextLine();
+                                String choseDescription = allServices.scanner().nextLine();
 
                                 Transaction newTransaction =
-                                        new Transaction(transactionService.generateTransactionID(),
+                                        new Transaction(allServices.transactionService().generateTransactionID(),
                                                 choseDescription,
-                                                currentUser.getUserId(),
+                                                allServices.userService.currentUser.getUserId(),
                                                 TransactionType.EXPENSE,
                                                 Category.values()[Integer.parseInt(choseIncomeType) + 2],
                                                 Double.parseDouble(choseAmount),
                                                 choseDate);
-                                allTransactions.add(newTransaction);
-                                transactionService.sortedTransactions.add(newTransaction);
-                                transactionService.sortedByDate.add(newTransaction);
+                                services.allTransactions().add(newTransaction);
+                                allServices.transactionService().sortedTransactions.add(newTransaction);
+                                allServices.transactionService().sortedByDate.add(newTransaction);
 
 
                             } else {
@@ -166,66 +143,75 @@ public class app {
                 // endregion
                 //region ViewTransactionRegion
                 case "2":
-                    System.out.println("1. Sorted \n " +
-                            "2. NotSorted");
-                    String transactionMenuChoice = scanner.nextLine();
-                    switch (transactionMenuChoice){
+                    allServices.UI.displayTransactionsMenu();
+                    String transactionMenuChoice = allServices.scanner().nextLine();
+                    ArrayList<Transaction> transactionsToDisplay = allServices.transactionService().getTransactionsByUser(
+                            allServices.userService.currentUser.getUserId(), services.allTransactions());
+                    switch (transactionMenuChoice) {
                         case "1":
-                            System.out.println("1. By Amount");
-                            System.out.println("2. By Date");
-                            System.out.println("Select: ");
-                            String choice = scanner.nextLine();
-                            if(choice.equalsIgnoreCase("amount") || choice.equals("1")){
-                                for (Transaction t : transactionService.sortedTransactions){
-                                    System.out.println(t);
-                                }
-                            }else {
-                                for (Transaction t : transactionService.sortedByDate){
-                                    System.out.println(t);
-                                }
-                            }
-                            break;
-                        case "2":
-                            ArrayList<Transaction> transactionsToDisplay = transactionService.getTransactionsByUser(currentUser.getUserId(), allTransactions);
                             for (Transaction t : transactionsToDisplay)
                                 if (t != null)
                                     System.out.println(t);
                             if (transactionsToDisplay.isEmpty())
                                 System.out.println("No transactions yet");
                             break;
+                        case "2":
+                            allServices.transactionService.displayFilteredTransactions(transactionsToDisplay,
+                                    transaction -> transaction.getCategory().equals(Category.FOOD));
+                            break;
+                        case "3":
+                            allServices.transactionService.displayFilteredTransactions(transactionsToDisplay,
+                                    transaction -> transaction.getAmount() > 50);
+                            break;
+                        case "4":
+
+                            allServices.UI.displayMonthsOfYear();
+                            int transactionMenuSelectMonth = allServices.scanner().nextInt();
+                            Months selectedMonth = Months.values()[transactionMenuSelectMonth - 1];
+                            allServices.transactionService.displayFilteredTransactions(transactionsToDisplay,
+                                    transaction -> transaction.getDate().split("-")[1].equals(selectedMonth.getNumber()));
+                            break;
+                        case "5":
+                            allServices.transactionService.displayFilteredTransactions(transactionsToDisplay,
+                                    transaction ->
+                                            transaction.getDate().compareTo(LocalDate.now().minusMonths(3).toString()) >= 0
+                                             && transaction.getDate().compareTo(LocalDate.now().toString()) <= 0
+                            );
+
+                            break;
                     }
                     break;
                 //endregion
                 //region BudgetRegion
                 case "3":
-                    UI.displayBudgetMenu();
-                    String budgetMenuChoice = scanner.nextLine();
+                    allServices.UI().displayBudgetMenu();
+                    String budgetMenuChoice = allServices.scanner().nextLine();
 
                     switch (budgetMenuChoice) {
                         case "1":
                             //Set Category Budget
-                            UI.displayExpenseMenu();
-                            String budgetTypeInput = scanner.nextLine();
+                            allServices.UI().displayExpenseMenu();
+                            String budgetTypeInput = allServices.scanner().nextLine();
 
-                            UI.displayMonthsOfYear();
-                            String monthTypeInput = scanner.nextLine();
+                            allServices.UI().displayMonthsOfYear();
+                            String monthTypeInput = allServices.scanner().nextLine();
 
                             System.out.println("Monthly budget: ");
-                            String monthlyBudgetInput = scanner.nextLine();
+                            String monthlyBudgetInput = allServices.scanner().nextLine();
 
                             Budget newBudget = new Budget("0",
-                                    currentUser.getUserId(),
+                                    allServices.userService.currentUser.getUserId(),
                                     Months.values()[Integer.parseInt(monthTypeInput)],
                                     Category.values()[Integer.parseInt(budgetTypeInput) + 2],
                                     Double.parseDouble(monthlyBudgetInput)
                             );
-                            budgetService.setBudget(newBudget, allBudgets);
+                            allServices.budgetService().setBudget(newBudget, services.allBudgets());
 
                             break;
                         case "2":
                             //View All Budgets
-                            for (Budget b : allBudgets) {
-                                if (b != null && b.getUserId().equals(currentUser.getUserId())) {
+                            for (Budget b : services.allBudgets()) {
+                                if (b != null && b.getUserId().equals(allServices.userService.currentUser.getUserId())) {
                                     System.out.println(b);
                                 }
                             }
@@ -233,27 +219,23 @@ public class app {
                         case "3":
                             //Check Budget Status
                             System.out.println("Choose month: ");
-                            UI.displayMonthsOfYear();
-                            int month = scanner.nextInt();
+                            allServices.UI().displayMonthsOfYear();
+                            int month = allServices.scanner().nextInt();
                             System.out.println("=== Budget Status - " + Months.values()[month] + " 2026 ===");
                             //=== Budget Status - February 2026 ===
                             ArrayList<Budget> budgetsToPrint = new ArrayList<>();
                             for (Category c : Category.values()) {
-                                if (c != null && c.getType() == TransactionType.EXPENSE) {
-                                    budgetsToPrint.add(budgetService.getBudget(
-                                            currentUser.getUserId(), c, Months.values()[month], allBudgets
-                                    ));
-                                }
+
                             }
                             //Loop through budgetsToPrint,
                             for (Budget b : budgetsToPrint) {
                                 // for each non-null budget: get transactions for that category/month,
                                 if (b != null) {
-                                    ArrayList<Transaction> transactionsTotal = transactionService.getTransactionsByMonth(
-                                            currentUser.getUserId(),
-                                            Months.values()[month], allTransactions);
+                                    ArrayList<Transaction> transactionsTotal = allServices.transactionService().getTransactionsByMonth(
+                                            allServices.userService.currentUser.getUserId(),
+                                            Months.values()[month], services.allTransactions());
                                     // calculate total spent,
-                                    double totalSpent = transactionService.calculateTotal(transactionsTotal);
+                                    double totalSpent = allServices.transactionService().calculateTotal(transactionsTotal);
                                     double procentage = totalSpent * 100 / b.getMonthlyLimit();
                                     System.out.println(b.getCategory() + ": " + totalSpent + " / " + b.getMonthlyLimit() +
                                             " (" + (int) procentage + "%)");
@@ -280,32 +262,32 @@ public class app {
                 //region Reports
                 case "4":
                     //Display report menu, get user choice,
-                    UI.displayReportMenu();
+                    allServices.UI().displayReportMenu();
                     ;
-                    String userReportInput = scanner.nextLine();
+                    String userReportInput = allServices.scanner().nextLine();
 
                     switch (userReportInput) {
                         //1. Generate Monthly Report
                         case "1":
                             System.out.println("Select which month");
-                            UI.displayMonthsOfYear();
-                            int monthInput = scanner.nextInt();
-                            MonthlyReport newReport = reportService.generateMonthlyReport(
-                                    currentUser.getUserId(),
+                            allServices.UI().displayMonthsOfYear();
+                            int monthInput = allServices.scanner().nextInt();
+                            MonthlyReport newReport = allServices.reportService().generateMonthlyReport(
+                                    allServices.userService.currentUser.getUserId(),
                                     Months.values()[monthInput],
-                                    allTransactions
+                                    services.allTransactions()
                             );
                             System.out.println(newReport);
                             break;
                         //                2. Print Category Breakdown
                         case "2":
-                            reportService.printCategoryBreakdown(currentUser.getUserId(), allTransactions, transactionService);
+                            allServices.reportService().printCategoryBreakdown(allServices.userService.currentUser.getUserId(), services.allTransactions(), allServices.transactionService());
                             break;
                         //                3. Print Year To Date Summary
                         case "3":
                             System.out.println("Type which year(YYYY)");
-                            String year = scanner.nextLine();
-                            reportService.printYearToDateSummary(currentUser.getUserId(), year, allTransactions);
+                            String year = allServices.scanner().nextLine();
+                            allServices.reportService().printYearToDateSummary(allServices.userService.currentUser.getUserId(), year, services.allTransactions());
                             break;
                         //                4. Back to Main Menu
                         case "4":
@@ -314,9 +296,9 @@ public class app {
                     break;
                 //endregion
                 case "5":
-                    fileService.saveUsers(allUsers, "data/users.txt");
-                    fileService.saveTransactions(allTransactions, "data/transactions.txt");
-                    fileService.saveBudgets(allBudgets, "data/bud.txt");
+                    allServices.fileService().saveUsers(services.allUsers(), "data/users.txt");
+                    allServices.fileService().saveTransactions(services.allTransactions(), "data/transactions.txt");
+                    allServices.fileService().saveBudgets(services.allBudgets(), "data/bud.txt");
                     return;
                 default:
                     System.out.println("Wrong Input!");
@@ -326,4 +308,37 @@ public class app {
         }
     }
 
+    //region records
+    private static LoadData getLoadData(InitializeServices allServices) {
+        ArrayList<User> allUsers = allServices.fileService().loadUsers("data/users.txt");
+        ArrayList<Transaction> allTransactions = allServices.fileService().loadTransactions("data/transactions.txt");
+        ArrayList<Budget> allBudgets = allServices.fileService().loadBudgets("data/bud.txt");
+        LoadData loadAlldata = new LoadData(allUsers, allTransactions, allBudgets);
+        return loadAlldata;
+    }
+
+    private record LoadData(ArrayList<User> allUsers, ArrayList<Transaction> allTransactions,
+                            ArrayList<Budget> allBudgets) {
+    }
+
+    private static InitializeServices getInitializeServices() {
+        Scanner scanner = new Scanner(System.in);
+        MenuManager UI = new MenuManager();
+        BudgetService budgetService = new BudgetService();
+        TransactionService transactionService = new TransactionService();
+        ReportService reportService = new ReportService();
+        FileService fileService = new FileService();
+        UserService userService = new UserService();
+        return new InitializeServices(scanner, UI, budgetService, transactionService, reportService, fileService, userService);
+    }
+
+    private record InitializeServices(Scanner scanner, MenuManager UI, BudgetService budgetService,
+                                      TransactionService transactionService, ReportService reportService,
+                                      FileService fileService, UserService userService) {
+    }
+
+    private record IntializeServices(ArrayList<User> allUsers, ArrayList<Transaction> allTransactions,
+                                     ArrayList<Budget> allBudgets) {
+    }
+    //endregion
 }

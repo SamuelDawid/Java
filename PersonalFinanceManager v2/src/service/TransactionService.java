@@ -1,10 +1,13 @@
 package service;
 
+import Iterators.TransactionIterator;
 import enums.Category;
 import enums.Months;
+import enums.TransactionType;
 import model.Transaction;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 public class TransactionService {
 
@@ -56,6 +59,14 @@ public class TransactionService {
         return transactionsByCategory;
 
     }
+    public void displayFilteredTransactions(List<Transaction> transactions, Predicate<Transaction> filter){
+        TransactionIterator iterator = new TransactionIterator(transactions,filter);
+        while (iterator.hasNext()){
+            Transaction transaction = iterator.next();
+            if(filter.test(transaction))
+                System.out.println(transaction);
+        }
+    }
     public double calculateTotal(ArrayList<Transaction> transactions){
         double sum = 0;
         for(Transaction t : transactions){
@@ -74,10 +85,17 @@ public class TransactionService {
     }
     transactions.remove(index);
     }
+    public void addTransaction(TransactionType typ){
+            if(typ.equals(TransactionType.EXPENSE)){
+
+
+            } else if (typ.equals(TransactionType.INCOME)) {
+
+
+            }
+    }
 
     public int generateTransactionID(){
-        // i want this to generate a random number between 100 000 000 and 999 999 999
-
         while (true){
             var rnd = rndTransGen();
             if(!trackTransactionID.contains(rnd)){
