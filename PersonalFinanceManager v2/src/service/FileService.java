@@ -1,7 +1,6 @@
 package service;
 
 import enums.Category;
-import enums.Months;
 import enums.TransactionType;
 import model.Budget;
 import model.Transaction;
@@ -9,6 +8,7 @@ import model.User;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.time.Month;
 import java.util.ArrayList;
 import java.util.Scanner;
 import java.io.File;
@@ -97,8 +97,8 @@ public class FileService {
                 String data = scanner.nextLine();
                 String[] parts = data.split(",");
 
-                Budget newBudget = new Budget(parts[0],parts[1],
-                        Months.valueOf(parts[2]),Category.valueOf(parts[3]),Double.parseDouble(parts[4]));
+                Budget newBudget = new Budget(Integer.parseInt(parts[0]),parts[1],
+                        Month.valueOf(parts[2]),Category.valueOf(parts[3]),Double.parseDouble(parts[4]));
                 budgetsToLoad.add(newBudget);
             }
 

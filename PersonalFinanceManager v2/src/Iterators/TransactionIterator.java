@@ -34,7 +34,7 @@ public class TransactionIterator implements Iterator<Transaction> {
     @Override
     public Transaction next() throws NoSuchElementException {
         if (!hasNext())
-            throw new NoSuchElementException("No more elements left");
+            throw new NoSuchElementException();
 
         Transaction currentElement = transactions.get(currentIndex);
         currentIndex++;

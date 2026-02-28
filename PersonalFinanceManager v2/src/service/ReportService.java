@@ -1,22 +1,22 @@
 package service;
 
 import enums.Category;
-import enums.Months;
 import enums.TransactionType;
 import model.MonthlyReport;
 import model.Transaction;
 
+import java.time.Month;
 import java.util.ArrayList;
 
 public class ReportService {
     //Methods:
-     public MonthlyReport generateMonthlyReport(String userId, Months month, ArrayList<Transaction> trans){
+     public MonthlyReport generateMonthlyReport(String userId, Month month, ArrayList<Transaction> trans){
         //Get all transactions for user,
          double totalIncome = 0,totalExpenses = 0;
 
         for (Transaction t : trans){
             if(t != null){
-                if(t.getUserId().equals(userId) && t.getDate().split("-")[1].equals(month.getNumber())){
+                if(t.getUserId().equals(userId) && t.getDate().split("-")[1].equals(String.valueOf(month.getValue()))){
                     // calculate totalExpenses (filter EXPENSE type),
                     if(t.getType() == TransactionType.EXPENSE){
                         totalExpenses+= t.getAmount();
@@ -31,10 +31,14 @@ public class ReportService {
 
         return new MonthlyReport(userId,month,totalIncome,totalExpenses,(totalIncome - totalExpenses));
      }
-    public void printCategoryBreakdown(String userId,ArrayList<Transaction> trans,TransactionService transactionService){
+    public void printCategoryBreakdown(String userId,TransactionService transactionService){
 
         for(Category c: Category.values()){
-            ArrayList<Transaction> categoryTrans = transactionService.getTransactionsByCategory(userId,c,trans);
+            ArrayList<Transaction> categoryTrans = (ArrayList<Transaction>) transactionService.getFilteredTransaction(
+                    transaction -> transaction.getCategory().equals(c) &&
+                            transaction.getUserId().equals(userId)
+
+            );
         double total = transactionService.calculateTotal(categoryTrans);
             System.out.println(c +": "+ total);
         }

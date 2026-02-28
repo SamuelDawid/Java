@@ -1,12 +1,14 @@
 package model;
 
 import enums.Category;
-import enums.Months;
+
+import java.time.Month;
 
 public class Budget {
-    String budgetId, userId;
+    String  userId;
+    int budgetId;
     Category category;
-    Months month;
+    Month month;
 
 
 
@@ -23,7 +25,7 @@ public class Budget {
                 '}';
     }
 
-    public Budget(String budgetId, String userId, Months month, Category category, double monthlyLimit) {
+    public Budget(int budgetId, String userId, Month month, Category category, double monthlyLimit) {
         this.budgetId = budgetId;
         this.userId = userId;
         this.month = month;
@@ -34,19 +36,19 @@ public class Budget {
         return monthlyLimit - spent ;
 
     }
-    public Months getMonth() {
+    public Month getMonth() {
         return month;
     }
 
-    public void setMonth(Months month) {
+    public void setMonth(Month month) {
         this.month = month;
     }
     //region Setter&Getters
-    public String getBudgetId() {
+    public int getBudgetId() {
         return budgetId;
     }
 
-    public void setBudgetId(String budgetId) {
+    public void setBudgetId(int budgetId) {
         this.budgetId = budgetId;
     }
 

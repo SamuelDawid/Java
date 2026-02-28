@@ -2,9 +2,10 @@ package service;
 
 import Iterators.TransactionIterator;
 import enums.Category;
-import enums.Months;
 import enums.TransactionType;
 import model.Transaction;
+import model.User;
+import ui.MenuManager;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -18,53 +19,22 @@ public class TransactionService {
 
     static int transactionID = 1;
     static HashSet<Integer> trackTransactionID = new HashSet<>();
-    public TreeSet<Transaction> sortedTransactions  = new TreeSet<>();
-    Comparator<Transaction> byDate = Comparator.comparing(Transaction::getDate);
-    public TreeSet<Transaction> sortedByDate = new TreeSet<>(byDate);
-    public static int getTransactionID() {
-        return transactionID;
-    }
+    private List<Transaction> allTransactions = new ArrayList<>();
+    MenuManager ui = new MenuManager();
+    Scanner scanner = new Scanner(System.in);
 
-
-    public ArrayList<Transaction> getTransactionsByUser(String userId,ArrayList<Transaction> transactions) {
-        ArrayList<Transaction> transactionsByID = new ArrayList<>();
-        for (Transaction transaction : transactions) {
-            if (transaction != null && transaction.getUserId().equals(userId)) {
-                transactionsByID.add(transaction);
-            }
+    public List<Transaction> getFilteredTransaction( Predicate<Transaction> filter){
+        List<Transaction> transactionsToReturn = new ArrayList<>();
+        TransactionIterator iterator = new TransactionIterator(allTransactions,filter);
+        while (iterator.hasNext()){
+                transactionsToReturn.add(iterator.next());
         }
-        return transactionsByID;
-    }
-
-    public ArrayList<Transaction> getTransactionsByMonth(String userId, Months month,ArrayList<Transaction> transactions) {
-        ArrayList<Transaction> transactionsByMonth = new ArrayList<>();
-        for (Transaction transaction : transactions) {
-            if (transaction != null && transaction.getUserId().equals(userId)) {
-                String[] split = transaction.getDate().split("-");
-                if (split[1].equals(month.getNumber())) {
-                    transactionsByMonth.add(transaction);
-                }
-            }
-        }
-        return transactionsByMonth;
-    }
-    public ArrayList<Transaction> getTransactionsByCategory(String userId, Category cat,ArrayList<Transaction> transactions){
-        ArrayList<Transaction> transactionsByCategory = new ArrayList<>();
-        for (Transaction transaction : transactions) {
-            if (transaction != null && transaction.getUserId().equals(userId) && transaction.getCategory().equals(cat)) {
-
-                transactionsByCategory.add(transaction) ;
-            }
-        }
-        return transactionsByCategory;
-
+        return transactionsToReturn;
     }
     public void displayFilteredTransactions(List<Transaction> transactions, Predicate<Transaction> filter){
         TransactionIterator iterator = new TransactionIterator(transactions,filter);
         while (iterator.hasNext()){
-            Transaction transaction = iterator.next();
-            if(filter.test(transaction))
-                System.out.println(transaction);
+                System.out.println(iterator.next());
         }
     }
     public double calculateTotal(ArrayList<Transaction> transactions){
@@ -76,23 +46,28 @@ public class TransactionService {
         }
         return sum;
     }
-    public void deleteTransaction(String transactionId,ArrayList<Transaction> transactions){
-    int index = 0;
-    for(int i= 0;i < transactions.size();i++){
-        if(transactions.get(i).getUserId().equals(transactionId))
-            index = i;
 
-    }
-    transactions.remove(index);
-    }
-    public void addTransaction(TransactionType typ){
-            if(typ.equals(TransactionType.EXPENSE)){
+    public void addTransaction(User currentUser){
+        ui.displayAllTransactionsCategoryMenu();
+        String inputTransactionCategory = scanner.nextLine();
 
+        System.out.println("Amount:");
+        String choseAmount = scanner.nextLine();
 
-            } else if (typ.equals(TransactionType.INCOME)) {
+        System.out.println("Date (YYYY-MM-DD):");
+        String choseDate = scanner.nextLine();
 
-
-            }
+        System.out.println("Description:");
+        String choseDescription = scanner.nextLine();
+        allTransactions.add(
+                new Transaction(generateTransactionID(),
+                        choseDescription,
+                        currentUser.getUserId(),
+                        TransactionType.INCOME,
+                        Category.values()[Integer.parseInt(inputTransactionCategory) - 1],
+                        Double.parseDouble(choseAmount),
+                        choseDate)
+        );
     }
 
     public int generateTransactionID(){
@@ -107,6 +82,12 @@ public class TransactionService {
     int rndTransGen(){
         return new Random().nextInt(100000000,999999999);
     }
+    public List<Transaction> getAllTransactions() {
+        return allTransactions;
+    }
 
+    public void setAllTransactions(List<Transaction> allTransactions) {
+        this.allTransactions = allTransactions;
+    }
 
 }

@@ -1,13 +1,15 @@
 package ui;
 
-import enums.Months;
+import enums.Category;
+
+import java.time.Month;
 
 public class MenuManager {
 
     //Methods:
     public void displayMainMenu() {
-        System.out.println("Main Menu");
         System.out.println("""
+                === Main Menu ===
                 1. Add Transaction, \s
                 2. View Transactions options,\s
                 3. View Budget options,\s
@@ -15,43 +17,15 @@ public class MenuManager {
                 5. Save & Exit.""");
     }
 
-    public void displayTransactionMenu() {
-        System.out.println("=== Add Transaction ===");
-        System.out.println("""
-                1. Income \s
-                2. Expense \s
-                Select type:
-                """);
+
+    public void displayAllTransactionsCategoryMenu() {
+        System.out.println("=== Transaction Type ===");
+        for (Category cat : Category.values())
+            System.out.println(cat);
 
     }
-
-    public void displayIncomeMenu() {
-        System.out.println("=== Income Type ===");
-        System.out.println("""
-                1. Salary \s
-                2. Gift \s
-                3. Bonus \s
-                Select type:
-                """);
-
-    }
-
-    public void displayExpenseMenu() {
-        System.out.println("=== Type ===");
-        System.out.println("""
-                1. Food \s
-                2. Transport \s
-                3. Entertainment \s
-                4. Bills \s
-                5. Shopping \s
-                6. Health \s
-                7. Other \s
-                Select type:
-                """);
-    }
-
     public void displayMonthsOfYear() {
-        for(Months month : Months.values())
+        for(Month month : Month.values())
             System.out.println(month);
     }
 
@@ -62,13 +36,13 @@ public class MenuManager {
                 1. Set Category Budget
                 2. View All Budgets
                 3. Check Budget Status
-                4. Back to Main Menu
+                4. Delete Budget
+                5. Back to Main Menu
                 Choice:
                 """);
     }
 
     public void displayReportMenu() {
-
         System.out.println("""
                 === Report Menu ===
                 1. Generate Monthly Report
@@ -80,15 +54,15 @@ public class MenuManager {
     }
 
     public void displayUserMenu() {
-        System.out.println("=== Select or Add User ===");
         System.out.println("""
+                === Select or Add User ===
                 1.Select Existing User, \s
                 2.Add New User
                 """);
     }
     public void displayTransactionsMenu(){
-        System.out.println("=== Transactions Menu ===");
         System.out.println("""
+                === Transactions Menu ===
                 1.View all transactions, \s
                 2.View only FOOD transactions \s
                 3.View only transactions over $50
