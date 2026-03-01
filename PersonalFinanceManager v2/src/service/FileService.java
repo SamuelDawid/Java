@@ -1,5 +1,7 @@
 package service;
 
+import Iterators.BudgetIterator;
+import Iterators.TransactionIterator;
 import enums.Category;
 import enums.TransactionType;
 import model.Budget;
@@ -10,8 +12,12 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.time.Month;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Scanner;
 import java.io.File;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 public class FileService {
 
@@ -44,18 +50,6 @@ public class FileService {
         }
          return loadUsers;
      }
-    public void saveTransactions(ArrayList<Transaction> trans, String filename){
-         try {
-             PrintWriter writer = new PrintWriter(filename);
-             for(Transaction t : trans){
-                 writer.println(t.getTransactionId() + "," + t.getDescription() + ","+ t.getUserId() + ","+ t.getType() +
-                         ","+ t.getCategory() + ","+ t.getAmount() + ","+ t.getDate());
-             }
-             writer.close();
-         } catch (FileNotFoundException e) {
-             throw new RuntimeException(e);
-         }
-     }
     public ArrayList<Transaction> loadTransactions(String filename){
         ArrayList<Transaction> transactionsToLoad = new ArrayList<>();
 
@@ -78,18 +72,7 @@ public class FileService {
          }
          return  transactionsToLoad;
      }
-    public void saveBudgets(ArrayList<Budget> budgets,String filename){
-         try {
-             PrintWriter writer = new PrintWriter(filename);
-             for(Budget b : budgets){
-                 writer.println(b.getBudgetId() + "," + b.getUserId() + "," + b.getMonth() + "," +b.getCategory()
-                         + "," + b.getMonthlyLimit());
-             }
-             writer.close();
-         } catch (FileNotFoundException e) {
-             throw new RuntimeException(e);
-         }
-     }
+
     public ArrayList<Budget> loadBudgets(String filename){
         ArrayList<Budget> budgetsToLoad = new ArrayList<>();
          try (Scanner scanner = new Scanner(new File(filename))){
@@ -107,4 +90,18 @@ public class FileService {
          }
          return  budgetsToLoad;
      }
+
+    public <T> void saveGeneric(List<T> items, Predicate<T> predicate, Function<T, String> format, String filename){
+        try {
+            PrintWriter writer = new PrintWriter(filename);
+           for (T item : items){
+               if(predicate.test(item))
+                   writer.println(format.apply(item));
+            }
+            writer.close();
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }

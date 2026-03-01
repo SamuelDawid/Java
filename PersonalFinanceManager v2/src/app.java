@@ -1,5 +1,6 @@
 //region imports
 
+import Iterators.TransactionIterator;
 import enums.Category;
 import model.Budget;
 import model.MonthlyReport;
@@ -25,41 +26,23 @@ public class app {
         ReportService reportService = new ReportService();
         FileService fileService = new FileService();
         UserService userService = new UserService();
-
-        
         //endregion
         //region LoadData
-        ArrayList<User> allUsers = fileService.loadUsers("data/users.txt");
+        userService.setAllUsers(fileService.loadUsers("data/users.txt"));
         transactionService.setAllTransactions(fileService.loadTransactions("data/transactions.txt"));
         budgetService.setAllBudgets(fileService.loadBudgets("data/bud.txt"));
         //endregion
         //region UserHandling
         boolean userFound = false;
         while (!userFound) {
-            UI.displayUserMenu();
+            UI.displayLoginMenu();
             String userInput = scanner.nextLine();
 
             switch (userInput) {
                 case "1":
-                    System.out.println("provide userID");
-                    String userIDinput = scanner.nextLine();
 
-                    for (User u : allUsers) {
-                        if (u != null && u.getUserId().equals(userIDinput)) {
-                            userService.currentUser = u;
-                            userFound = true;
-                            System.out.println("User logged in.");
-                            break;
-                        }
-                    }
-                    if (!userFound)
-                        System.out.println("No user found!");
-                    break;
                 case "2":
-                    allUsers.add(userService.createNewUser());
-                    System.out.println("Added : " + userService.currentUser);
-                    userFound = true;
-                    break;
+
                 default:
                     System.out.println("Invalid Input");
                     break;
@@ -192,9 +175,15 @@ public class app {
                     break;
                 //endregion
                 case "5":
-                    fileService.saveUsers(allUsers, "data/users.txt");
-                    fileService.saveTransactions((ArrayList<Transaction>) transactionService.getAllTransactions(), "data/transactions.txt");
-                    fileService.saveBudgets((ArrayList<Budget>) budgetService.getAllBudgets(), "data/bud.txt");
+                    fileService.saveUsers(userService.getAllUsers(), "data/users.txt");
+                    fileService.saveGeneric(transactionService.getAllTransactions(),
+                            transaction -> true,
+                            transactionService.formatTransactionCSV,
+                            "data/transactions.txt");
+                    fileService.saveGeneric(budgetService.getAllBudgets(),
+                            budget -> true,
+                            budgetService.formatBudgetCSV,
+                            "data/bud.txt");
                     return;
                 default:
                     System.out.println("Wrong Input!");

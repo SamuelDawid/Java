@@ -3,9 +3,11 @@ package service;
 import Iterators.TransactionIterator;
 import enums.Category;
 import enums.TransactionType;
+import model.Budget;
 import model.Transaction;
 import model.User;
 import ui.MenuManager;
+import java.util.function.Function;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -22,6 +24,18 @@ public class TransactionService {
     private List<Transaction> allTransactions = new ArrayList<>();
     MenuManager ui = new MenuManager();
     Scanner scanner = new Scanner(System.in);
+    //Predicate fields
+    public static Predicate<Transaction> isExpense = transaction -> transaction.getType().equals(TransactionType.EXPENSE);
+    public static Predicate<Transaction> isIncome  = transaction -> transaction.getType().equals(TransactionType.INCOME);
+    public static Predicate<Transaction> isOverAmount (double amount) {
+            return transaction -> transaction.getAmount() > amount;
+    }  ;
+    //Function transformations:
+
+    public Function<Transaction,String> extractCategoryName = transaction -> transaction.getCategory().getDisplayName();
+    public Function<Transaction,Double> extractAmount = Transaction::getAmount;
+    public Function<Transaction,String> formatTransactionCSV = Transaction::formatTransactionCSV;
+
 
     public List<Transaction> getFilteredTransaction( Predicate<Transaction> filter){
         List<Transaction> transactionsToReturn = new ArrayList<>();

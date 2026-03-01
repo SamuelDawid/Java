@@ -33,7 +33,10 @@ public class User {
                 ", email='" + email + '\'' +
                 '}';
     }
-
+    public String formatUserCSV() {
+        return String.format("%s,%s,%s,%s",
+                userId, firstName, lastName, email);
+    }
     public String getUserId() {
         return userId;
     }

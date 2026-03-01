@@ -9,9 +9,6 @@ public class Budget {
     int budgetId;
     Category category;
     Month month;
-
-
-
     double monthlyLimit;
 
     @Override
@@ -24,7 +21,10 @@ public class Budget {
                 ", monthlyLimit=" + monthlyLimit +
                 '}';
     }
-
+    public String formatBudgetCSV(){
+        return String.format("%s: $%.2f for %s",
+                category, monthlyLimit, month);
+    }
     public Budget(int budgetId, String userId, Month month, Category category, double monthlyLimit) {
         this.budgetId = budgetId;
         this.userId = userId;

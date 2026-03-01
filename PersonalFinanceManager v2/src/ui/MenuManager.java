@@ -53,13 +53,6 @@ public class MenuManager {
                 """);
     }
 
-    public void displayUserMenu() {
-        System.out.println("""
-                === Select or Add User ===
-                1.Select Existing User, \s
-                2.Add New User
-                """);
-    }
     public void displayTransactionsMenu(){
         System.out.println("""
                 === Transactions Menu ===
@@ -69,6 +62,15 @@ public class MenuManager {
                 4.View only transactions from specific month
                 5.View only transactions from last 3 months
                 """);
+    }
+    public void displayLoginMenu(){
+        System.out.println("""
+        === Welcome to Finance Manager ===
+        ("1. Log In")
+        ("2. Sign Up")
+        ("3. Exit")
+        ("Choice: ")
+        """);
     }
 
 }

@@ -10,6 +10,7 @@ import ui.MenuManager;
 
 import java.time.Month;
 import java.util.*;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 public class BudgetService {
@@ -19,6 +20,8 @@ public class BudgetService {
     private List<Budget> allBudgets = new ArrayList<>();
     MenuManager ui = new MenuManager();
     Scanner scanner = new Scanner(System.in);
+    public Function<Budget,String> formatBudgetCSV = Budget::formatBudgetCSV;
+
 
     public void setBudget(User currentUser){
         for (Category category : Category.values())

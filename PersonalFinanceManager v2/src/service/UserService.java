@@ -2,14 +2,20 @@ package service;
 
 import model.User;
 
+import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.function.Function;
 
-public class UserService extends User{
+public class UserService {
     public User currentUser = new User();
     int currentUsersNumber = 0;
     private final Scanner scanner = new Scanner(System.in);
+    private ArrayList<User> allUsers = new ArrayList<>();
 
-   public User createNewUser(){
+    public Function<User,String> userFormatCVS = User::formatUserCSV;
+
+
+   public void createNewUser() {
        System.out.println("Adding new User");
        System.out.println("First Name:");
        String firstName = scanner.nextLine();
@@ -19,6 +25,14 @@ public class UserService extends User{
        String email = scanner.nextLine();
        currentUser = new User(String.valueOf(currentUsersNumber), firstName, lastName, email);
        currentUsersNumber++;
-      return currentUser;
+       allUsers.add(currentUser);
    }
+
+    public ArrayList<User> getAllUsers() {
+        return allUsers;
+    }
+
+    public void setAllUsers(ArrayList<User> allUsers) {
+        this.allUsers = allUsers;
+    }
 }
