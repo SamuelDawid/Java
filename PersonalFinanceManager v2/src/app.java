@@ -175,7 +175,7 @@ public class app {
                     break;
                 //endregion
                 case "5":
-                    fileService.saveUsers(userService.getAllUsers(), "data/users.txt");
+                    fileService.saveGeneric(userService.getAllUsers(),user -> true, userService.userFormatCVS, "data/users.txt");
                     fileService.saveGeneric(transactionService.getAllTransactions(),
                             transaction -> true,
                             transactionService.formatTransactionCSV,

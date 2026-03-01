@@ -37,7 +37,7 @@ public class BudgetService {
 
         allBudgets.add( new Budget(generateBudgetID(),
                 currentUser.getUserId(),
-                Month.values()[Integer.parseInt(monthTypeInput)],
+                Month.values()[Integer.parseInt(monthTypeInput )-1],
                 Category.values()[Integer.parseInt(budgetTypeInput)],
                 Double.parseDouble(monthlyBudgetInput)
         ));

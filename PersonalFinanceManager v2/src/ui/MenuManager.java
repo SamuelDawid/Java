@@ -24,8 +24,9 @@ public class MenuManager {
             System.out.println(cat);
 
     }
+
     public void displayMonthsOfYear() {
-        for(Month month : Month.values())
+        for (Month month : Month.values())
             System.out.println(month);
     }
 
@@ -53,24 +54,26 @@ public class MenuManager {
                 """);
     }
 
-    public void displayTransactionsMenu(){
+    public void displayTransactionsMenu() {
         System.out.println("""
                 === Transactions Menu ===
                 1.View all transactions, \s
                 2.View only FOOD transactions \s
-                3.View only transactions over $50
-                4.View only transactions from specific month
-                5.View only transactions from last 3 months
+                3.View only transactions over $50\s
+                4.View only transactions from specific month\s
+                5.View only transactions from last 3 months\s
                 """);
     }
-    public void displayLoginMenu(){
+
+    public void displayLoginMenu() {
         System.out.println("""
-        === Welcome to Finance Manager ===
-        ("1. Log In")
-        ("2. Sign Up")
-        ("3. Exit")
-        ("Choice: ")
-        """);
+                === Welcome to Finance Manager ===\s
+                1. Log In \s
+                2. Sign Up \s
+                3. Exit \s
+                Choice:
+                """);
+        ;
     }
 
 }

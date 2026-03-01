@@ -21,30 +21,15 @@ import java.util.function.Predicate;
 
 public class FileService {
 
-     public void saveUsers(ArrayList<User> users, String filename) {
-         try {
-             PrintWriter writer = new PrintWriter(filename);
-             for (User user : users) {
-                 writer.println(user.getUserId() + "," + user.getFirstName() + "," + user.getLastName() + "," + user.getEmail());
-             }
-             writer.close();
-         } catch (FileNotFoundException e) {
-             throw new RuntimeException(e);
-         }
-
-     }
      public ArrayList<User> loadUsers(String filename){
         ArrayList<User> loadUsers = new ArrayList<>();
         try (Scanner scanner = new Scanner(new File(filename))){
-            // i have to split data into array
             while (scanner.hasNextLine()){
                 String data = scanner.nextLine();
                 String[] parts = data.split(",");
-                User newUser = new User(parts[0],parts[1],parts[2],parts[3]);
+                User newUser = new User(parts[0],parts[1],parts[2],parts[3],parts[4]);
                 loadUsers.add(newUser);
-
             }
-
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }

@@ -15,8 +15,8 @@ public class ReportService {
          double totalIncome = 0,totalExpenses = 0;
 
         for (Transaction t : trans){
-            if(t != null){
-                if(t.getUserId().equals(userId) && t.getDate().split("-")[1].equals(String.valueOf(month.getValue()))){
+            if(t != null){//equals(String.format("%02d",selectedMonth.getValue())
+                if(t.getUserId().equals(userId) && t.getDate().split("-")[1].equals(String.format("%02d",month.getValue()))){
                     // calculate totalExpenses (filter EXPENSE type),
                     if(t.getType() == TransactionType.EXPENSE){
                         totalExpenses+= t.getAmount();

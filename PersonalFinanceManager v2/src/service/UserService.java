@@ -3,17 +3,17 @@ package service;
 import model.User;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.function.Function;
 
 public class UserService {
     public User currentUser = new User();
-    int currentUsersNumber = 0;
     private final Scanner scanner = new Scanner(System.in);
     private ArrayList<User> allUsers = new ArrayList<>();
-
+    private HashMap<String,User> userIdMap = new HashMap<>();
     public Function<User,String> userFormatCVS = User::formatUserCSV;
-
 
    public void createNewUser() {
        System.out.println("Adding new User");
@@ -23,8 +23,10 @@ public class UserService {
        String lastName = scanner.nextLine();
        System.out.println("Email:");
        String email = scanner.nextLine();
-       currentUser = new User(String.valueOf(currentUsersNumber), firstName, lastName, email);
-       currentUsersNumber++;
+       System.out.println("password:");
+       String password = scanner.nextLine();
+       currentUser = new User(GetRandom(),password,firstName,lastName,email);
+       userIdMap.put(currentUser.getUserId(),currentUser);
        allUsers.add(currentUser);
    }
 
@@ -34,5 +36,12 @@ public class UserService {
 
     public void setAllUsers(ArrayList<User> allUsers) {
         this.allUsers = allUsers;
+    }
+    public String GetRandom(){
+        while (true){
+            var rand = new Random().nextInt(0,99999);
+        if(!userIdMap.containsKey(String.valueOf(rand)))
+            return String.valueOf(rand) ;
+        }
     }
 }
