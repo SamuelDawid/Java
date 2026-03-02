@@ -3,7 +3,6 @@ package service;
 import Iterators.TransactionIterator;
 import enums.Category;
 import enums.TransactionType;
-import model.Budget;
 import model.Transaction;
 import model.User;
 import ui.MenuManager;
@@ -11,8 +10,6 @@ import java.util.function.Function;
 
 import java.util.*;
 import java.util.function.Predicate;
-import java.util.stream.DoubleStream;
-import java.util.stream.Stream;
 
 public class TransactionService {
 
@@ -27,15 +24,15 @@ public class TransactionService {
     MenuManager ui = new MenuManager();
     Scanner scanner = new Scanner(System.in);
     //Predicate fields
-    public static Predicate<Transaction> isExpense = transaction -> transaction.getType().equals(TransactionType.EXPENSE);
-    public static Predicate<Transaction> isIncome  = transaction -> transaction.getType().equals(TransactionType.INCOME);
+    public static Predicate<Transaction> isExpense = transaction -> transaction.type().equals(TransactionType.EXPENSE);
+    public static Predicate<Transaction> isIncome  = transaction -> transaction.type().equals(TransactionType.INCOME);
     public static Predicate<Transaction> isOverAmount (double amount) {
-            return transaction -> transaction.getAmount() > amount;
+            return transaction -> transaction.amount() > amount;
     }  ;
     //Function transformations:
 
-    public Function<Transaction,String> extractCategoryName = transaction -> transaction.getCategory().getDisplayName();
-    public Function<Transaction,Double> extractAmount = Transaction::getAmount;
+    public Function<Transaction,String> extractCategoryName = transaction -> transaction.category().getDisplayName();
+    public Function<Transaction,Double> extractAmount = Transaction::amount;
     public Function<Transaction,String> formatTransactionCSV = Transaction::formatTransactionCSV;
 
 
@@ -52,7 +49,7 @@ public class TransactionService {
     public double calculateTotal(ArrayList<Transaction> transactions){
         return transactions.stream()
                 .filter(Objects::nonNull)
-                .mapToDouble(Transaction::getAmount).sum();
+                .mapToDouble(Transaction::amount).sum();
     }
 
     public void addTransaction(User currentUser){

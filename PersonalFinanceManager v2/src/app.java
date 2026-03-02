@@ -1,11 +1,9 @@
 //region imports
 
-import Iterators.TransactionIterator;
 import enums.Category;
 import model.Budget;
 import model.MonthlyReport;
 import model.Transaction;
-import model.User;
 import service.*;
 import ui.MenuManager;
 
@@ -58,7 +56,6 @@ public class app {
             }
         }
         //endregion
-        //- Display menu
         while (true) {
             UI.displayMainMenu();
             String input = scanner.nextLine();
@@ -71,7 +68,7 @@ public class app {
                     UI.displayTransactionsMenu();
                     String transactionMenuChoice = scanner.nextLine();
                     List<Transaction> transactionsToDisplay = transactionService.getFilteredTransaction(
-                            transaction -> transaction.getUserId().equals(userService.currentUser.getUserId())
+                            transaction -> transaction.userId().equals(userService.currentUser.getUserId())
                     );
                     switch (transactionMenuChoice) {
                         case "1":
@@ -83,24 +80,24 @@ public class app {
                             break;
                         case "2":
                             transactionService.displayFilteredTransactions(transactionsToDisplay,
-                                    transaction -> transaction.getCategory().equals(Category.FOOD));
+                                    transaction -> transaction.category().equals(Category.FOOD));
                             break;
                         case "3":
                             transactionService.displayFilteredTransactions(transactionsToDisplay,
-                                    transaction -> transaction.getAmount() > 50);
+                                    transaction -> transaction.amount() > 50);
                             break;
                         case "4":
                             UI.displayMonthsOfYear();
                             int transactionMenuSelectMonth = scanner.nextInt();
                             Month selectedMonth = Month.values()[transactionMenuSelectMonth - 1];
                             transactionService.displayFilteredTransactions(transactionsToDisplay,
-                                    transaction -> transaction.getDate().split("-")[1].equals(String.format("%02d", selectedMonth.getValue())));
+                                    transaction -> transaction.date().split("-")[1].equals(String.format("%02d", selectedMonth.getValue())));
                             break;
                         case "5":
                             transactionService.displayFilteredTransactions(transactionsToDisplay,
                                     transaction ->
-                                            transaction.getDate().compareTo(LocalDate.now().minusMonths(3).toString()) >= 0
-                                                    && transaction.getDate().compareTo(LocalDate.now().toString()) <= 0
+                                            transaction.date().compareTo(LocalDate.now().minusMonths(3).toString()) >= 0
+                                                    && transaction.date().compareTo(LocalDate.now().toString()) <= 0
                             );
                             break;
                     }
@@ -135,8 +132,9 @@ public class app {
                             System.out.println("Provide budgetID: ");
                             String budgetIdInput = scanner.nextLine();
                             if(budgetService.removeBudget(userService.currentUser,Integer.parseInt(budgetIdInput)))
-
-                            ;
+                                System.out.println("Budget deleted successfully") ;
+                            else
+                            System.out.println("Budget does not exist");
                             break;
                         case "5":
                             // Back to Main Menu
@@ -181,6 +179,7 @@ public class app {
                     }
                     break;
                 //endregion
+                //region ExitSave
                 case "5":
                     fileService.saveGeneric(userService.getAllUsers(), user -> true, userService.userFormatCVS, "data/users.txt");
                     fileService.saveGeneric(transactionService.getAllTransactions(),
@@ -195,9 +194,8 @@ public class app {
                 default:
                     System.out.println("Wrong Input!");
                     break;
+                    //endregion
             }
-
         }
     }
-
 }

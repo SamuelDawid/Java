@@ -6,13 +6,13 @@ import enums.TransactionType;
 import model.Budget;
 import model.Transaction;
 import model.User;
+import org.jetbrains.annotations.NotNull;
 import ui.MenuManager;
 
 import java.time.Month;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Stream;
 
 public class BudgetService {
     //Fields:
@@ -52,15 +52,15 @@ public class BudgetService {
     }
     public boolean removeBudget(User current,int budgetID){
         Optional<Budget> remove = budgetToRemove(current,budgetID);
+
         if(remove.isPresent()){
-            allBudgets.remove(remove);
-            System.out.println("Budget deleted successfully");
+            allBudgets.remove(remove.get());
             return true;
         }
-        System.out.println("Budget does not exist");
         return false;
     }
-    private Optional<Budget> budgetToRemove(User current,int budgetID){
+    @org.jetbrains.annotations.NotNull
+    private Optional<Budget> budgetToRemove(User current, int budgetID){
         List<Budget> userBudgets = getFilteredBudgets(budget -> budget.getUserId().equals(current.getUserId()));
         return  userBudgets.stream().filter(budget -> budget.getBudgetId() == budgetID).findAny();
     }
@@ -69,12 +69,12 @@ public class BudgetService {
     while (iterator.hasNext())
         System.out.println(iterator.next());
     }
-    public void displayBudgetStatus(Budget budget,TransactionService transactionService){
+    public void displayBudgetStatus(@NotNull Budget budget, @NotNull TransactionService transactionService){
         // calculate total spend
         List<Transaction> filteredTransactions = transactionService.getFilteredTransaction(
-                transaction -> transaction.getUserId().equals(budget.getUserId()) &&
-                        transaction.getCategory().equals(budget.getCategory()) &&
-                        transaction.getDate().split("-")[1].equals(String.format("%02d",budget.getMonth().getValue()))
+                transaction -> transaction.userId().equals(budget.getUserId()) &&
+                        transaction.category().equals(budget.getCategory()) &&
+                        transaction.date().split("-")[1].equals(String.format("%02d",budget.getMonth().getValue()))
         );
         System.out.println(filteredTransactions);
         double totalSpent = transactionService.calculateTotal((ArrayList<Transaction>) filteredTransactions);

@@ -8,19 +8,16 @@ import model.Transaction;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class ReportService {
     //Methods:
      public MonthlyReport generateMonthlyReport(String userId, Month month, ArrayList<Transaction> trans){
 
-         Stream<Transaction> filter = trans.stream()
-                 .filter(t -> t.getUserId().equals(userId) && t.getDate().split("-")[1].equals(String.format("%02d",month.getValue())));
-         List<Transaction> filterList = filter.toList();
+         List<Transaction> filterList  = trans.stream()
+                 .filter(t -> t.userId().equals(userId) && t.date().split("-")[1].equals(String.format("%02d",month.getValue()))).toList();
 
-       double totalExpenses =  filterList.stream().filter(t -> t.getType().equals(TransactionType.EXPENSE)).mapToDouble(Transaction::getAmount).sum();
-       double totalIncome = filterList.stream().filter(t->t.getType().equals(TransactionType.INCOME)).mapToDouble(Transaction::getAmount).sum();
+       double totalExpenses =  filterList.stream().filter(t -> t.type().equals(TransactionType.EXPENSE)).mapToDouble(Transaction::amount).sum();
+       double totalIncome = filterList.stream().filter(t->t.type().equals(TransactionType.INCOME)).mapToDouble(Transaction::amount).sum();
 
         return new MonthlyReport(userId,month,totalIncome,totalExpenses,(totalIncome - totalExpenses));
      }
@@ -28,8 +25,8 @@ public class ReportService {
 
         for(Category c: Category.values()){
             ArrayList<Transaction> categoryTrans = (ArrayList<Transaction>) transactionService.getFilteredTransaction(
-                    transaction -> transaction.getCategory().equals(c) &&
-                            transaction.getUserId().equals(userId)
+                    transaction -> transaction.category().equals(c) &&
+                            transaction.userId().equals(userId)
 
             );
         double total = transactionService.calculateTotal(categoryTrans);
@@ -39,11 +36,10 @@ public class ReportService {
     }
     public void printYearToDateSummary(String userId, String year, ArrayList<Transaction> trans){
     //Loop through transactions,
-        Stream<Transaction> filter = trans.stream()
-                .filter(t->t.getDate().split("-")[0].equals(year) && t.getUserId().equals(userId));
-        List<Transaction>filterList = filter.toList();
-        double totalExpenses =  filterList.stream().filter(t -> t.getType().equals(TransactionType.EXPENSE)).mapToDouble(Transaction::getAmount).sum();
-        double totalIncome = filterList.stream().filter(t->t.getType().equals(TransactionType.INCOME)).mapToDouble(Transaction::getAmount).sum();
+        List<Transaction>filterList = trans.stream()
+                .filter(t->t.date().split("-")[0].equals(year) && t.userId().equals(userId)).toList();
+        double totalExpenses =  filterList.stream().filter(t -> t.type().equals(TransactionType.EXPENSE)).mapToDouble(Transaction::amount).sum();
+        double totalIncome = filterList.stream().filter(t->t.type().equals(TransactionType.INCOME)).mapToDouble(Transaction::amount).sum();
 
         System.out.println("Total Income for "+year+": "+totalIncome+"\n"+
                 "Total Expenses for "+year+": "+totalExpenses+"\n");
