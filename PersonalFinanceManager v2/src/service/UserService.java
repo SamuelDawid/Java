@@ -54,13 +54,11 @@ public class UserService {
         System.out.println("└─────────────────────────────┘");
 
         Optional<User> loggedUser = findUser(email, password);
-
-        if (loggedUser.isEmpty()) {
-            System.out.println("User not found");
-        } else {
+        if(loggedUser.isPresent()){
             currentUser = loggedUser.get();
             return true;
         }
+        System.out.println("User not found");
         return false;
     }
 
