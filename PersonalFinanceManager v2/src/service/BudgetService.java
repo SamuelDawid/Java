@@ -12,6 +12,7 @@ import java.time.Month;
 import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 public class BudgetService {
     //Fields:
@@ -48,6 +49,20 @@ public class BudgetService {
         while (iterator.hasNext())
             listToReturn.add(iterator.next());
         return  listToReturn;
+    }
+    public boolean removeBudget(User current,int budgetID){
+        Optional<Budget> remove = budgetToRemove(current,budgetID);
+        if(remove.isPresent()){
+            allBudgets.remove(remove);
+            System.out.println("Budget deleted successfully");
+            return true;
+        }
+        System.out.println("Budget does not exist");
+        return false;
+    }
+    private Optional<Budget> budgetToRemove(User current,int budgetID){
+        List<Budget> userBudgets = getFilteredBudgets(budget -> budget.getUserId().equals(current.getUserId()));
+        return  userBudgets.stream().filter(budget -> budget.getBudgetId() == budgetID).findAny();
     }
     public void displayFilteredBudgets(Predicate<Budget> predicate){
     BudgetIterator iterator = new BudgetIterator(allBudgets,predicate);

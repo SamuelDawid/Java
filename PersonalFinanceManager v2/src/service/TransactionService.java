@@ -11,6 +11,8 @@ import java.util.function.Function;
 
 import java.util.*;
 import java.util.function.Predicate;
+import java.util.stream.DoubleStream;
+import java.util.stream.Stream;
 
 public class TransactionService {
 
@@ -45,16 +47,12 @@ public class TransactionService {
     }
     public void displayFilteredTransactions(List<Transaction> transactions, Predicate<Transaction> filter){
         TransactionIterator iterator = new TransactionIterator(transactions,filter);
-        while (iterator.hasNext()) System.out.println(iterator.next());
+        while (iterator.hasNext())  System.out.println(iterator.next());
     }
     public double calculateTotal(ArrayList<Transaction> transactions){
-        double sum = 0;
-        for(Transaction t : transactions){
-            if(t != null) {
-                sum+= t.getAmount();
-            }
-        }
-        return sum;
+        return transactions.stream()
+                .filter(Objects::nonNull)
+                .mapToDouble(Transaction::getAmount).sum();
     }
 
     public void addTransaction(User currentUser){

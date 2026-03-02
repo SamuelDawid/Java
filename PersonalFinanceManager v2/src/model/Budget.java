@@ -13,13 +13,18 @@ public class Budget {
 
     @Override
     public String toString() {
-        return "Budget{" +
-                "budgetId='" + budgetId + '\'' +
-                ", userId='" + userId + '\'' +
-                ", month='" + month + '\'' +
-                ", category=" + category +
-                ", monthlyLimit=" + monthlyLimit +
-                '}';
+        return String.format("┌─────────────────────────────┐%n" +
+                        "│  BUDGET DETAILS             │%n" +
+                        "├─────────────────────────────┤%n" +
+                        "│  ID        : %-16s│%n" +
+                        "│  Month     : %-16s│%n" +
+                        "│  Category  : %-16s│%n" +
+                        "│  Limit     : %-16.2f│%n" +
+                        "└─────────────────────────────┘",
+                budgetId,
+                month,
+                category,
+                monthlyLimit);
     }
     public String formatBudgetCSV(){
         return String.format("%s: $%.2f for %s",

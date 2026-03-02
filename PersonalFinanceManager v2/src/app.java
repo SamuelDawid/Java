@@ -132,7 +132,11 @@ public class app {
                             break;
                         case "4":
                             //remove budget
+                            System.out.println("Provide budgetID: ");
+                            String budgetIdInput = scanner.nextLine();
+                            if(budgetService.removeBudget(userService.currentUser,Integer.parseInt(budgetIdInput)))
 
+                            ;
                             break;
                         case "5":
                             // Back to Main Menu
@@ -141,8 +145,6 @@ public class app {
                             System.out.println("Incorrect choice");
                             break;
                     }
-
-
                     break;
                 //endregion
                 //region Reports
@@ -162,22 +164,18 @@ public class app {
                                     userService.currentUser.getUserId(),
                                     Month.values()[monthInput],
                                     new ArrayList<>(transactionService.getAllTransactions()
-
                                     ));
                             System.out.println(newReport);
                             scanner.nextLine();
                             break;
-                        //                2. Print Category Breakdown
                         case "2":
                             reportService.printCategoryBreakdown(userService.currentUser.getUserId(), transactionService);
                             break;
-                        //                3. Print Year To Date Summary
                         case "3":
                             System.out.println("Type which year(YYYY)");
                             String year = scanner.nextLine();
                             reportService.printYearToDateSummary(userService.currentUser.getUserId(), year, new ArrayList<>(transactionService.getAllTransactions()));
                             break;
-                        //                4. Back to Main Menu
                         case "4":
                             break;
                     }
