@@ -77,7 +77,7 @@ public class BudgetService {
                         transaction.date().split("-")[1].equals(String.format("%02d",budget.getMonth().getValue()))
         );
         System.out.println(filteredTransactions);
-        double totalSpent = transactionService.calculateTotal((ArrayList<Transaction>) filteredTransactions);
+        double totalSpent = transactionService.calculateTotal(filteredTransactions);
         double percentage = totalSpent * 100 / budget.getMonthlyLimit();
         System.out.println(budget.getCategory() + ": " + totalSpent + " / " + budget.getMonthlyLimit() +
                 " (" + (int) percentage + "%)");

@@ -24,7 +24,7 @@ public class ReportService {
     public void printCategoryBreakdown(String userId,TransactionService transactionService){
 
         for(Category c: Category.values()){
-            ArrayList<Transaction> categoryTrans = (ArrayList<Transaction>) transactionService.getFilteredTransaction(
+            List<Transaction> categoryTrans = transactionService.getFilteredTransaction(
                     transaction -> transaction.category().equals(c) &&
                             transaction.userId().equals(userId)
 

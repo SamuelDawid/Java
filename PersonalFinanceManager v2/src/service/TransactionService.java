@@ -46,7 +46,7 @@ public class TransactionService {
         TransactionIterator iterator = new TransactionIterator(transactions,filter);
         while (iterator.hasNext())  System.out.println(iterator.next());
     }
-    public double calculateTotal(ArrayList<Transaction> transactions){
+    public double calculateTotal(List<Transaction> transactions){
         return transactions.stream()
                 .filter(Objects::nonNull)
                 .mapToDouble(Transaction::amount).sum();

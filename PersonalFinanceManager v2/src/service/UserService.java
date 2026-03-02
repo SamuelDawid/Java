@@ -28,15 +28,13 @@ public class UserService {
     }
 
     public Optional<User> findUser(String email, String password) {
-        Stream<User> userStream = allUsers.stream();
-        return userStream.filter(user -> user.getEmail().equals(email) && user.getPassword().equals(password)).findFirst();
+        return allUsers.stream().filter(user -> user.getEmail().equals(email) && user.getPassword().equals(password)).findFirst();
     }
 
     public boolean signUp() {
         System.out.println("Type email: ");
         String email = scanner.nextLine();
-        Stream<User> userStream = allUsers.stream();
-        if (userStream.anyMatch(user -> user.getEmail().equals(email))) {
+        if (allUsers.stream().anyMatch(user -> user.getEmail().equals(email))) {
             System.out.println("Email already in  use");
         } else{
             createNewUser(email);
