@@ -40,16 +40,12 @@ public class TransactionService {
     public List<Transaction> getFilteredTransaction( Predicate<Transaction> filter){
         List<Transaction> transactionsToReturn = new ArrayList<>();
         TransactionIterator iterator = new TransactionIterator(allTransactions,filter);
-        while (iterator.hasNext()){
-                transactionsToReturn.add(iterator.next());
-        }
+        while (iterator.hasNext()) transactionsToReturn.add(iterator.next());
         return transactionsToReturn;
     }
     public void displayFilteredTransactions(List<Transaction> transactions, Predicate<Transaction> filter){
         TransactionIterator iterator = new TransactionIterator(transactions,filter);
-        while (iterator.hasNext()){
-                System.out.println(iterator.next());
-        }
+        while (iterator.hasNext()) System.out.println(iterator.next());
     }
     public double calculateTotal(ArrayList<Transaction> transactions){
         double sum = 0;

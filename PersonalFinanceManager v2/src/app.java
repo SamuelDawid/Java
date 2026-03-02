@@ -40,9 +40,18 @@ public class app {
 
             switch (userInput) {
                 case "1":
-
+                    if (userService.Login()) {
+                        System.out.println("Logged IN!");
+                        userFound = true;
+                    }
+                    break;
                 case "2":
-
+                    if (userService.signUp()) {
+                        userFound = true;
+                    }
+                    break;
+                case "3":
+                    return;
                 default:
                     System.out.println("Invalid Input");
                     break;
@@ -85,7 +94,7 @@ public class app {
                             int transactionMenuSelectMonth = scanner.nextInt();
                             Month selectedMonth = Month.values()[transactionMenuSelectMonth - 1];
                             transactionService.displayFilteredTransactions(transactionsToDisplay,
-                                    transaction -> transaction.getDate().split("-")[1].equals(String.format("%02d",selectedMonth.getValue())));
+                                    transaction -> transaction.getDate().split("-")[1].equals(String.format("%02d", selectedMonth.getValue())));
                             break;
                         case "5":
                             transactionService.displayFilteredTransactions(transactionsToDisplay,
@@ -119,7 +128,7 @@ public class app {
                             List<Budget> budgetsToCheck = budgetService.getFilteredBudgets(
                                     budget -> budget.getMonth().equals(month));
                             for (Budget b : budgetsToCheck)
-                                budgetService.displayBudgetStatus(b,transactionService);
+                                budgetService.displayBudgetStatus(b, transactionService);
                             break;
                         case "4":
                             //remove budget
@@ -154,19 +163,19 @@ public class app {
                                     Month.values()[monthInput],
                                     new ArrayList<>(transactionService.getAllTransactions()
 
-                            ));
+                                    ));
                             System.out.println(newReport);
                             scanner.nextLine();
                             break;
                         //                2. Print Category Breakdown
                         case "2":
-                           reportService.printCategoryBreakdown(userService.currentUser.getUserId(), transactionService);
+                            reportService.printCategoryBreakdown(userService.currentUser.getUserId(), transactionService);
                             break;
                         //                3. Print Year To Date Summary
                         case "3":
                             System.out.println("Type which year(YYYY)");
                             String year = scanner.nextLine();
-                            reportService.printYearToDateSummary(userService.currentUser.getUserId(), year,new ArrayList<>(transactionService.getAllTransactions()));
+                            reportService.printYearToDateSummary(userService.currentUser.getUserId(), year, new ArrayList<>(transactionService.getAllTransactions()));
                             break;
                         //                4. Back to Main Menu
                         case "4":
@@ -175,7 +184,7 @@ public class app {
                     break;
                 //endregion
                 case "5":
-                    fileService.saveGeneric(userService.getAllUsers(),user -> true, userService.userFormatCVS, "data/users.txt");
+                    fileService.saveGeneric(userService.getAllUsers(), user -> true, userService.userFormatCVS, "data/users.txt");
                     fileService.saveGeneric(transactionService.getAllTransactions(),
                             transaction -> true,
                             transactionService.formatTransactionCSV,
@@ -192,5 +201,5 @@ public class app {
 
         }
     }
-    
+
 }

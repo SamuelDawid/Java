@@ -47,7 +47,6 @@ public class BudgetService {
         BudgetIterator iterator = new BudgetIterator(allBudgets,predicate);
         while (iterator.hasNext())
             listToReturn.add(iterator.next());
-
         return  listToReturn;
     }
     public void displayFilteredBudgets(Predicate<Budget> predicate){

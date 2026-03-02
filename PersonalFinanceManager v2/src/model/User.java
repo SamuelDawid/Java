@@ -4,15 +4,14 @@ import java.util.Objects;
 
 public class User {
     private String userId,firstName,lastName,email,password;
-    public User()
-    {}
-    public User(String userId,String password, String firstName, String lastName, String email) {
+    public User(String userId, String firstName, String lastName, String email,String password) {
         this.userId = userId;
         this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
     }
+    public User(){}
     // we are skipping the user ID in equals to avoid same users with different id
 
     @Override
@@ -56,6 +55,10 @@ public class User {
 
     public String getEmail() {
         return email;
+    }
+
+    public String getPassword() {
+        return password;
     }
 
     public void setEmail(String email) {

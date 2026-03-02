@@ -66,13 +66,14 @@ public class MenuManager {
     }
 
     public void displayLoginMenu() {
-        System.out.println("""
-                === Welcome to Finance Manager ===\s
-                1. Log In \s
-                2. Sign Up \s
-                3. Exit \s
-                Choice:
-                """);
+        System.out.println("┌─────────────────────────────┐");
+        System.out.println("│       FINANCE MANAGER       │");
+        System.out.println("├─────────────────────────────┤");
+        System.out.println("│  1. Login                   │");
+        System.out.println("│  2. Register                │");
+        System.out.println("│  3. Exit                    │");
+        System.out.println("└─────────────────────────────┘");
+        System.out.print("  Select: ");
         ;
     }
 
