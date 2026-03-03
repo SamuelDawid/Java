@@ -91,13 +91,13 @@ public class app {
                             int transactionMenuSelectMonth = scanner.nextInt();
                             Month selectedMonth = Month.values()[transactionMenuSelectMonth - 1];
                             transactionService.displayFilteredTransactions(transactionsToDisplay,
-                                    transaction -> transaction.date().split("-")[1].equals(String.format("%02d", selectedMonth.getValue())));
+                                    transaction -> transaction.date().getMonth().equals(selectedMonth));
                             break;
                         case "5":
                             transactionService.displayFilteredTransactions(transactionsToDisplay,
                                     transaction ->
-                                            transaction.date().compareTo(LocalDate.now().minusMonths(3).toString()) >= 0
-                                                    && transaction.date().compareTo(LocalDate.now().toString()) <= 0
+                                            !transaction.date().isBefore(LocalDate.now().minusMonths(3))
+                                                    && !transaction.date().isAfter(LocalDate.now())
                             );
                             break;
                     }
@@ -152,7 +152,6 @@ public class app {
                     String userReportInput = scanner.nextLine();
 
                     switch (userReportInput) {
-                        //1. Generate Monthly Report
                         case "1":
                             System.out.println("Select which month");
                             UI.displayMonthsOfYear();
@@ -160,7 +159,7 @@ public class app {
 
                             MonthlyReport newReport = reportService.generateMonthlyReport(
                                     userService.currentUser.getUserId(),
-                                    Month.values()[monthInput],
+                                    Month.values()[monthInput -1],
                                     new ArrayList<>(transactionService.getAllTransactions()
                                     ));
                             System.out.println(newReport);

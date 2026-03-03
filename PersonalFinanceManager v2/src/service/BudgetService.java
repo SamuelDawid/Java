@@ -74,7 +74,7 @@ public class BudgetService {
         List<Transaction> filteredTransactions = transactionService.getFilteredTransaction(
                 transaction -> transaction.userId().equals(budget.getUserId()) &&
                         transaction.category().equals(budget.getCategory()) &&
-                        transaction.date().split("-")[1].equals(String.format("%02d",budget.getMonth().getValue()))
+                        transaction.date().getMonth().equals(budget.getMonth())
         );
         System.out.println(filteredTransactions);
         double totalSpent = transactionService.calculateTotal(filteredTransactions);

@@ -6,6 +6,9 @@ import enums.TransactionType;
 import model.Transaction;
 import model.User;
 import ui.MenuManager;
+
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.function.Function;
 
 import java.util.*;
@@ -71,7 +74,7 @@ public class TransactionService {
                         TransactionType.INCOME,
                         Category.values()[Integer.parseInt(inputTransactionCategory) - 1],
                         Double.parseDouble(choseAmount),
-                        choseDate)
+                        LocalDate.parse(choseDate))
         );
     }
 

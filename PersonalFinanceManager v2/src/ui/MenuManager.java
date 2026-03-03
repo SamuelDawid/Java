@@ -27,7 +27,7 @@ public class MenuManager {
 
     public void displayMonthsOfYear() {
         for (Month month : Month.values())
-            System.out.println(month);
+            System.out.println(month.getValue() + ". " + month);
     }
 
     public void displayBudgetMenu() {

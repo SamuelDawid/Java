@@ -10,6 +10,7 @@ import model.User;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -48,7 +49,7 @@ public class FileService {
                          TransactionType.valueOf(parts[3]),
                          Category.valueOf(parts[4]),
                          Double.parseDouble(parts[5]),
-                         parts[6]);
+                         LocalDate.parse(parts[6]));
                  transactionsToLoad.add(newTransaction);
              }
 

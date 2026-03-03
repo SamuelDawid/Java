@@ -14,7 +14,7 @@ public class ReportService {
      public MonthlyReport generateMonthlyReport(String userId, Month month, ArrayList<Transaction> trans){
 
          List<Transaction> filterList  = trans.stream()
-                 .filter(t -> t.userId().equals(userId) && t.date().split("-")[1].equals(String.format("%02d",month.getValue()))).toList();
+                 .filter(t -> t.userId().equals(userId) && t.date().getMonth().equals(month)).toList();
 
        double totalExpenses =  filterList.stream().filter(t -> t.type().equals(TransactionType.EXPENSE)).mapToDouble(Transaction::amount).sum();
        double totalIncome = filterList.stream().filter(t->t.type().equals(TransactionType.INCOME)).mapToDouble(Transaction::amount).sum();
@@ -37,7 +37,7 @@ public class ReportService {
     public void printYearToDateSummary(String userId, String year, ArrayList<Transaction> trans){
     //Loop through transactions,
         List<Transaction>filterList = trans.stream()
-                .filter(t->t.date().split("-")[0].equals(year) && t.userId().equals(userId)).toList();
+                .filter(t->t.date().getYear() == Integer.parseInt(year) && t.userId().equals(userId)).toList();
         double totalExpenses =  filterList.stream().filter(t -> t.type().equals(TransactionType.EXPENSE)).mapToDouble(Transaction::amount).sum();
         double totalIncome = filterList.stream().filter(t->t.type().equals(TransactionType.INCOME)).mapToDouble(Transaction::amount).sum();
 

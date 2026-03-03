@@ -3,8 +3,10 @@ package model;
 import enums.Category;
 import enums.TransactionType;
 
+import java.time.LocalDate;
+
 public record Transaction(int transactionId, String description, String userId, TransactionType type, Category category,
-                          double amount, String date) implements Comparable<Transaction> {
+                          double amount, LocalDate date) implements Comparable<Transaction> {
 
     @Override
     public String toString() {
