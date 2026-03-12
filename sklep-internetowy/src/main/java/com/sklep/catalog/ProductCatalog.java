@@ -1,12 +1,31 @@
 package com.sklep.catalog;
 
+import com.sklep.Enums.ProductCategory;
 import com.sklep.model.Product;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class ProductCatalog {
-    List<Product> productList = new ArrayList<>();
+    private HashMap<ProductCategory,List<Product>> catalog = new HashMap<>();
 
+    boolean addProduct(ProductCategory c, Product p) {
+        if(c != null && p != null) {
+            catalog.computeIfAbsent(c, k -> new ArrayList<>()).add(p);
+        return true;
+        }
+        throw new ProductNotFoundException("Product or category not found");
+    }
+
+    Optional<List<Product>> getProductsByCategory(ProductCategory c){
+        return Optional.ofNullable(catalog.get(c));
+    }
+    List<Product> searchByName(String name) {
+        return catalog.values().stream().flatMap(Collection::stream).filter(product -> product.getName().equals(name)).collect(Collectors.toList());
+    }
+    List<Product> getAllProducts(){
+        return  catalog.values().stream().flatMap(Collection::stream).collect(Collectors.toList());
+    }
 
 }
