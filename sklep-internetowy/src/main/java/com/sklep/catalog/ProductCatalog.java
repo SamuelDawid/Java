@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 public class ProductCatalog {
     private HashMap<ProductCategory,List<Product>> catalog = new HashMap<>();
 
-    boolean addProduct(ProductCategory c, Product p) {
+    public boolean addProduct(ProductCategory c, Product p) {
         if(c != null && p != null) {
             catalog.computeIfAbsent(c, k -> new ArrayList<>()).add(p);
         return true;
@@ -18,13 +18,13 @@ public class ProductCatalog {
         throw new ProductNotFoundException("Product or category not found");
     }
 
-    Optional<List<Product>> getProductsByCategory(ProductCategory c){
+    public Optional<List<Product>> getProductsByCategory(ProductCategory c){
         return Optional.ofNullable(catalog.get(c));
     }
-    List<Product> searchByName(String name) {
+    public List<Product> searchByName(String name) {
         return catalog.values().stream().flatMap(Collection::stream).filter(product -> product.getName().equals(name)).collect(Collectors.toList());
     }
-    List<Product> getAllProducts(){
+    public List<Product> getAllProducts(){
         return  catalog.values().stream().flatMap(Collection::stream).collect(Collectors.toList());
     }
 
