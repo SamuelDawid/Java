@@ -34,4 +34,7 @@ public class Cart implements Iterable<Product>{
         return new CartIterator(productLinkedList);
     }
 
+    public LinkedList<Product> getProductLinkedList() {
+        return productLinkedList;
+    }
 }
