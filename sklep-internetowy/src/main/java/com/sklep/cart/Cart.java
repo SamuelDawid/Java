@@ -2,33 +2,36 @@ package com.sklep.cart;
 
 import com.sklep.model.Product;
 
+import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.Optional;
 
-public class Cart {
+public class Cart implements Iterable<Product>{
     LinkedList<Product> productLinkedList = new LinkedList<>();
-    CartIterator iterator = new CartIterator(productLinkedList);
 
-
-    boolean addProduct(Product product){
-    Optional<Product> productToAdd = Optional.ofNullable(product);
-        if(productToAdd.isPresent()){
-            productLinkedList.add(productToAdd.get());
+    public boolean addProduct(Product product){
+        if(product != null){
+            productLinkedList.add(product);
             return true;
         }
 
-        return false;
+        throw new  IllegalArgumentException();
     }
 
-    boolean removeProduct(Product product){
-        Optional<Product> productToRemove = Optional.ofNullable(product);
-        if(productToRemove.isPresent()){
-            productLinkedList.remove(productToRemove.get());
+    public boolean removeProduct(Product product){
+        if(product != null){
+            productLinkedList.remove(product);
             return true;
         }
-        return false;
+        throw new  IllegalArgumentException();
+
     }
-    Double getTotal(){
+    public Double getTotal(){
         return productLinkedList.stream().mapToDouble(Product::getPrice).sum();
     }
+
+    @Override
+    public Iterator<Product> iterator() {
+        return new CartIterator(productLinkedList);
+    }
+
 }
