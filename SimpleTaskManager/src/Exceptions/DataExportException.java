@@ -1,4 +1,7 @@
 package Exceptions;
 
-public class DataExportExcception {
+public class DataExportException extends RuntimeException{
+    public DataExportException(String message) {
+        super(message);
+    }
 }

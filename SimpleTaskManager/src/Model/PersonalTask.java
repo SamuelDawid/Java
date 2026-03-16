@@ -4,7 +4,6 @@ package Model;
 import Enuums.Priority;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 public class PersonalTask extends Task{
     String category;
@@ -13,4 +12,5 @@ public class PersonalTask extends Task{
         super(title, priority, dueDate);
         this.category = category;
     }
+
 }

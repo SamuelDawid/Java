@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 public class ProductCatalog {
     private HashMap<ProductCategory,List<Product>> catalog = new HashMap<>();
 
-    public boolean addProduct(ProductCategory c, Product p) {
+    public boolean addProduct(ProductCategory c, Product p) throws ProductNotFoundException {
         if(c != null && p != null) {
             catalog.computeIfAbsent(c, k -> new ArrayList<>()).add(p);
         return true;
