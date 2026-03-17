@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 
@@ -23,6 +24,7 @@ public class User {
     private String userName,email;
     private String passwordHash;
     private Double startWeight,targetWeight;
+    @CreationTimestamp
     private LocalDateTime createdAt;
 
 
