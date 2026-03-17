@@ -11,13 +11,16 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "habit")
-public class Habit {
+public class HabitEntry {
+    @ManyToOne
+    @JoinColumn(name = "daily_log_id")
+    private DailyLog log;
+    @ManyToOne
+    @JoinColumn(name = "habit_id")
+    private Habit habit;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String name,description;
-    private Integer xpReward,xpPenalty;
-    private Boolean isCore,isSundayRest,isDeloadRest,isInverted;
-
+    private Boolean completed;
+    private Integer xpEarned;
 }
