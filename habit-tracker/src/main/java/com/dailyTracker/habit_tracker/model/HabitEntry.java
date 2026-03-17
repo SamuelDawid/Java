@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class HabitEntry {
     @ManyToOne
     @JoinColumn(name = "daily_log_id")
-    private DailyLog log;
+    private DailyLog dailyLog;
     @ManyToOne
     @JoinColumn(name = "habit_id")
     private Habit habit;
