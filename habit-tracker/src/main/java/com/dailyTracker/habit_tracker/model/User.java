@@ -16,8 +16,8 @@ import java.time.LocalDateTime;
 @Builder
 @Table(name = "users")
 public class User {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private Long totalXp;
     @Column(unique = true,nullable = false)
