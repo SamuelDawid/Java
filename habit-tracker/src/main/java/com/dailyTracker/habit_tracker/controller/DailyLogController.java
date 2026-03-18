@@ -10,12 +10,14 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/logs")
 @RequiredArgsConstructor
 public class DailyLogController {
     private final DailyLogService dailyLogService;
+
     @GetMapping("/{date}/entries")
     public ResponseEntity<List<HabitEntry>> getEntries(@PathVariable LocalDate date) {
         return ResponseEntity.ok(dailyLogService.getEntriesForDate(1L, date));
@@ -29,5 +31,11 @@ public class DailyLogController {
     public ResponseEntity<Void> submitDailyHabits(@PathVariable LocalDate date, @RequestBody DailyLogRequest request){
          dailyLogService.submitHabits(1L,date,request.getHabitCompletions());
          return ResponseEntity.noContent().build();
+    }
+    @PatchMapping("/{date}/weight")
+    public ResponseEntity<Void> saveWeight(@RequestBody Map<String,Double> weightMap,@PathVariable LocalDate date) {
+        dailyLogService.updateWeight(1L,date,weightMap.get("weightKg"));
+        return ResponseEntity.noContent().build();
+
     }
 }

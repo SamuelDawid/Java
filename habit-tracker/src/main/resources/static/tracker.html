@@ -1,403 +1,405 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>THE EXILE'S DAILY TRACKER v1.0</title>
-<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Share+Tech+Mono&family=Oswald:wght@400;600&display=swap" rel="stylesheet">
-<style>
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --bg: #0d0f1a; --bg2: #111428; --bg3: #161a2e;
-    --border: #1e2540; --border2: #2a3160;
-    --gold: #f0b429; --gold2: #ffd166;
-    --cyan: #06b6d4; --cyan2: #67e8f9;
-    --red: #ef4444; --green: #22c55e; --green2: #4ade80;
-    --text: #e2e8f0; --text2: #94a3b8; --text3: #64748b;
-  }
-  body { background: var(--bg); color: var(--text); font-family: 'Rajdhani', sans-serif; min-height: 100vh; }
-  .top-banner { background: #0a3d2e; border-bottom: 2px solid var(--cyan); padding: 6px 20px; font-family: 'Share Tech Mono', monospace; font-size: 12px; color: var(--cyan2); white-space: nowrap; overflow: hidden; }
-  .xp-bar { background: var(--bg2); border-bottom: 1px solid var(--border2); padding: 14px 24px; display: flex; align-items: center; gap: 32px; }
-  .xp-stat { display: flex; align-items: center; gap: 10px; }
-  .xp-label { font-size: 11px; font-weight: 600; letter-spacing: 2px; color: var(--text2); text-transform: uppercase; }
-  .xp-value { font-family: 'Share Tech Mono', monospace; font-size: 28px; font-weight: 700; color: var(--gold); line-height: 1; }
-  .xp-divider { width: 1px; height: 40px; background: var(--border2); }
-  .title-value { font-size: 22px; font-weight: 700; color: var(--gold2); font-family: 'Oswald', sans-serif; letter-spacing: 1px; }
-  .xp-sub { text-align: center; padding: 6px 24px 10px; background: var(--bg2); border-bottom: 1px solid var(--border); font-size: 13px; color: var(--text2); }
-  .xp-sub .quote { color: var(--text); margin-bottom: 4px; }
-  .xp-sub .next { color: var(--text3); font-family: 'Share Tech Mono', monospace; font-size: 12px; }
-  .xp-sub .next span { color: var(--cyan); }
-  .main-layout { display: flex; align-items: flex-start; }
-  .left-col { flex: 1; min-width: 0; }
-  .right-col { width: 390px; min-width: 350px; border-left: 1px solid var(--border2); background: var(--bg2); position: sticky; top: 0; max-height: 100vh; overflow-y: auto; }
-  .body-mission { background: var(--bg2); border: 1px solid var(--border2); margin: 16px 16px 0; padding: 12px 20px; }
-  .section-title { text-align: center; font-size: 12px; letter-spacing: 4px; color: var(--cyan); font-weight: 600; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 12px; }
-  .section-title::before, .section-title::after { content: ''; flex: 1; height: 1px; background: var(--cyan); opacity: 0.4; }
-  .body-stats { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
-  .body-stat { display: flex; align-items: baseline; gap: 5px; }
-  .body-stat-label { font-size: 11px; letter-spacing: 1px; color: var(--text2); text-transform: uppercase; }
-  .body-stat-value { font-family: 'Share Tech Mono', monospace; font-size: 18px; font-weight: 700; color: var(--gold); }
-  .body-stat-value.white { color: var(--text); }
-  .body-stat-value.green { color: var(--green2); }
-  .body-stat-value.target { color: var(--gold2); }
-  .body-stat-unit { font-size: 12px; color: var(--text3); }
-  .progress-row { display: flex; align-items: center; gap: 12px; margin-top: 6px; }
-  .progress-label { font-size: 11px; letter-spacing: 2px; color: var(--text2); text-transform: uppercase; min-width: 70px; }
-  .progress-track { flex: 1; height: 10px; background: var(--bg3); border: 1px solid var(--border2); overflow: hidden; }
-  .progress-fill { height: 100%; background: repeating-linear-gradient(90deg, var(--cyan) 0px, var(--cyan) 6px, transparent 6px, transparent 8px); width: 0%; transition: width 1s ease; }
-  .progress-pct { font-family: 'Share Tech Mono', monospace; font-size: 12px; color: var(--cyan); min-width: 80px; }
-  .body-tips { font-size: 11px; color: var(--text3); margin-top: 6px; font-family: 'Share Tech Mono', monospace; }
-  .body-tips span { margin-right: 12px; }
-  .table-wrapper { margin: 16px; overflow-x: auto; }
-  table.habit-table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 700px; }
-  .habit-table th { background: var(--bg3); padding: 7px 4px; text-align: center; font-size: 10px; font-weight: 600; letter-spacing: 1px; color: var(--text2); border: 1px solid var(--border2); white-space: nowrap; }
-  .habit-table th.col-date { text-align: left; padding-left: 10px; color: var(--cyan); }
-  .habit-table th.col-xp { color: var(--gold); }
-  .habit-table td { border: 1px solid var(--border); padding: 5px 3px; text-align: center; vertical-align: middle; }
-  .habit-table tr.row-sun td { background: rgba(6,182,212,0.04); }
-  .habit-table tr.row-sat td { background: rgba(6,182,212,0.04); }
-  .habit-table tr.row-weekday td { background: var(--bg2); }
-  .habit-table tr.row-total td { background: var(--bg3); font-size: 11px; border-top: 2px solid var(--border2); }
-  .cell-date { text-align: left; padding-left: 10px !important; font-family: 'Share Tech Mono', monospace; font-size: 12px; font-weight: 700; color: var(--text); white-space: nowrap; }
-  .cell-day { font-size: 10px; font-weight: 700; letter-spacing: 1px; color: var(--text2); }
-  .cell-day.sunday { color: var(--cyan); }
-  .cell-day.saturday { color: var(--cyan2); }
-  .rest-badge { font-size: 9px; letter-spacing: 1px; color: var(--text3); }
-  .cell-xp { font-family: 'Share Tech Mono', monospace; font-size: 15px; font-weight: 700; color: var(--gold); }
-  .habit-cb { width: 18px; height: 18px; cursor: pointer; appearance: none; -webkit-appearance: none; border: 2px solid var(--border2); background: transparent; display: inline-block; position: relative; transition: all 0.15s; }
-  .habit-cb:checked { background: var(--green); border-color: var(--green); }
-  .habit-cb:checked::after { content: ''; position: absolute; left: 3px; top: 0px; width: 5px; height: 9px; border: 2px solid #fff; border-top: none; border-left: none; transform: rotate(45deg); }
-  .habit-cb.inverted:checked { background: var(--red); border-color: var(--red); }
-  .habit-cb:disabled { opacity: 0.15; cursor: default; }
-  .notes-input { background: transparent; border: none; outline: none; color: var(--text2); font-family: 'Rajdhani', sans-serif; font-size: 11px; width: 100%; min-width: 80px; }
-  .weight-input { background: transparent; border: none; border-bottom: 1px solid var(--border2); outline: none; color: var(--gold); font-family: 'Share Tech Mono', monospace; font-size: 12px; width: 44px; text-align: center; }
-  .habit-icon { display: block; font-size: 13px; margin-bottom: 1px; }
-  .total-label { font-size: 9px; color: var(--text3); display: block; }
-  .total-value { font-family: 'Share Tech Mono', monospace; font-size: 13px; color: var(--gold); }
-  .right-section { padding: 14px 16px; border-bottom: 1px solid var(--border2); }
-  .right-section-title { font-size: 11px; letter-spacing: 3px; color: var(--gold); font-weight: 700; text-transform: uppercase; margin-bottom: 12px; text-align: center; padding-bottom: 8px; border-bottom: 1px solid var(--border2); }
-  table.ladder-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-  .ladder-table th { font-size: 9px; letter-spacing: 2px; color: var(--text3); padding: 4px 5px; border-bottom: 1px solid var(--border2); font-weight: 600; }
-  .ladder-table td { padding: 5px 5px; border-bottom: 1px solid var(--border); vertical-align: middle; }
-  .ladder-table tr.active-level td { background: rgba(240,180,41,0.07); }
-  .lad-lvl { font-family: 'Share Tech Mono', monospace; font-size: 12px; color: var(--text3); font-weight: 700; text-align: center; }
-  .lad-lvl.active { color: var(--gold); }
-  .lad-title { font-weight: 700; font-size: 12px; color: var(--text2); white-space: nowrap; }
-  .lad-title.active { color: var(--gold2); }
-  .lad-xp { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--text3); text-align: right; white-space: nowrap; }
-  .lad-xp.active { color: var(--cyan); }
-  .lad-quote { font-size: 10px; color: var(--text3); font-style: italic; }
-  .drag-handle { cursor: grab; color: var(--text3); font-size: 13px; user-select: none; }
-  .ladder-table tr.dragging { opacity: 0.3; }
-  table.ref-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-  .ref-table th { font-size: 9px; letter-spacing: 2px; color: var(--text3); padding: 4px 5px; border-bottom: 1px solid var(--border2); font-weight: 600; }
-  .ref-table td { padding: 5px 5px; border-bottom: 1px solid var(--border); vertical-align: middle; }
-  .ref-habit-name { font-weight: 700; font-size: 12px; color: var(--text); display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
-  .ref-core { font-size: 8px; color: var(--gold); border: 1px solid var(--gold); padding: 1px 3px; letter-spacing: 1px; }
-  .ref-inv { font-size: 8px; color: var(--red); border: 1px solid var(--red); padding: 1px 3px; letter-spacing: 1px; }
-  .ref-xp-input { background: transparent; border: none; border-bottom: 1px solid var(--border2); outline: none; color: var(--green2); font-family: 'Share Tech Mono', monospace; font-size: 13px; width: 40px; text-align: center; }
-  .ref-pen-input { background: transparent; border: none; border-bottom: 1px solid var(--border2); outline: none; color: var(--red); font-family: 'Share Tech Mono', monospace; font-size: 13px; width: 40px; text-align: center; }
-  .ref-notes-input { background: transparent; border: none; outline: none; color: var(--text3); font-family: 'Rajdhani', sans-serif; font-size: 11px; width: 100%; }
-  ::-webkit-scrollbar { height: 5px; width: 5px; }
-  ::-webkit-scrollbar-track { background: var(--bg); }
-  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE EXILE'S DAILY TRACKER v1.0</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Share+Tech+Mono&family=Oswald:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        :root {
+          --bg: #0d0f1a; --bg2: #111428; --bg3: #161a2e;
+          --border: #1e2540; --border2: #2a3160;
+          --gold: #f0b429; --gold2: #ffd166;
+          --cyan: #06b6d4; --cyan2: #67e8f9;
+          --red: #ef4444; --green: #22c55e; --green2: #4ade80;
+          --text: #e2e8f0; --text2: #94a3b8; --text3: #64748b;
+        }
+        body { background: var(--bg); color: var(--text); font-family: 'Rajdhani', sans-serif; min-height: 100vh; }
+        .top-banner { background: #0a3d2e; border-bottom: 2px solid var(--cyan); padding: 6px 20px; font-family: 'Share Tech Mono', monospace; font-size: 12px; color: var(--cyan2); white-space: nowrap; overflow: hidden; }
+        .xp-bar { background: var(--bg2); border-bottom: 1px solid var(--border2); padding: 14px 24px; display: flex; align-items: center; gap: 32px; }
+        .xp-stat { display: flex; align-items: center; gap: 10px; }
+        .xp-label { font-size: 11px; font-weight: 600; letter-spacing: 2px; color: var(--text2); text-transform: uppercase; }
+        .xp-value { font-family: 'Share Tech Mono', monospace; font-size: 28px; font-weight: 700; color: var(--gold); line-height: 1; }
+        .xp-divider { width: 1px; height: 40px; background: var(--border2); }
+        .title-value { font-size: 22px; font-weight: 700; color: var(--gold2); font-family: 'Oswald', sans-serif; letter-spacing: 1px; }
+        .xp-sub { text-align: center; padding: 6px 24px 10px; background: var(--bg2); border-bottom: 1px solid var(--border); font-size: 13px; color: var(--text2); }
+        .xp-sub .quote { color: var(--text); margin-bottom: 4px; }
+        .xp-sub .next { color: var(--text3); font-family: 'Share Tech Mono', monospace; font-size: 12px; }
+        .xp-sub .next span { color: var(--cyan); }
+        .main-layout { display: flex; align-items: flex-start; }
+        .left-col { flex: 1; min-width: 0; }
+        .right-col { width: 390px; min-width: 350px; border-left: 1px solid var(--border2); background: var(--bg2); position: sticky; top: 0; max-height: 100vh; overflow-y: auto; }
+        .body-mission { background: var(--bg2); border: 1px solid var(--border2); margin: 16px 16px 0; padding: 12px 20px; }
+        .section-title { text-align: center; font-size: 12px; letter-spacing: 4px; color: var(--cyan); font-weight: 600; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; gap: 12px; }
+        .section-title::before, .section-title::after { content: ''; flex: 1; height: 1px; background: var(--cyan); opacity: 0.4; }
+        .body-stats { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; margin-bottom: 8px; }
+        .body-stat { display: flex; align-items: baseline; gap: 5px; }
+        .body-stat-label { font-size: 11px; letter-spacing: 1px; color: var(--text2); text-transform: uppercase; }
+        .body-stat-value { font-family: 'Share Tech Mono', monospace; font-size: 18px; font-weight: 700; color: var(--gold); }
+        .body-stat-value.white { color: var(--text); }
+        .body-stat-value.green { color: var(--green2); }
+        .body-stat-value.target { color: var(--gold2); }
+        .body-stat-unit { font-size: 12px; color: var(--text3); }
+        .progress-row { display: flex; align-items: center; gap: 12px; margin-top: 6px; }
+        .progress-label { font-size: 11px; letter-spacing: 2px; color: var(--text2); text-transform: uppercase; min-width: 70px; }
+        .progress-track { flex: 1; height: 10px; background: var(--bg3); border: 1px solid var(--border2); overflow: hidden; }
+        .progress-fill { height: 100%; background: repeating-linear-gradient(90deg, var(--cyan) 0px, var(--cyan) 6px, transparent 6px, transparent 8px); width: 0%; transition: width 1s ease; }
+        .progress-pct { font-family: 'Share Tech Mono', monospace; font-size: 12px; color: var(--cyan); min-width: 80px; }
+        .body-tips { font-size: 11px; color: var(--text3); margin-top: 6px; font-family: 'Share Tech Mono', monospace; }
+        .body-tips span { margin-right: 12px; }
+        .table-wrapper { margin: 16px; overflow-x: auto; }
+        table.habit-table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 700px; }
+        .habit-table th { background: var(--bg3); padding: 7px 4px; text-align: center; font-size: 10px; font-weight: 600; letter-spacing: 1px; color: var(--text2); border: 1px solid var(--border2); white-space: nowrap; }
+        .habit-table th.col-date { text-align: left; padding-left: 10px; color: var(--cyan); }
+        .habit-table th.col-xp { color: var(--gold); }
+        .habit-table td { border: 1px solid var(--border); padding: 5px 3px; text-align: center; vertical-align: middle; }
+        .habit-table tr.row-sun td { background: rgba(6,182,212,0.04); }
+        .habit-table tr.row-sat td { background: rgba(6,182,212,0.04); }
+        .habit-table tr.row-weekday td { background: var(--bg2); }
+        .habit-table tr.row-total td { background: var(--bg3); font-size: 11px; border-top: 2px solid var(--border2); }
+        .cell-date { text-align: left; padding-left: 10px !important; font-family: 'Share Tech Mono', monospace; font-size: 12px; font-weight: 700; color: var(--text); white-space: nowrap; }
+        .cell-day { font-size: 10px; font-weight: 700; letter-spacing: 1px; color: var(--text2); }
+        .cell-day.sunday { color: var(--cyan); }
+        .cell-day.saturday { color: var(--cyan2); }
+        .rest-badge { font-size: 9px; letter-spacing: 1px; color: var(--text3); }
+        .cell-xp { font-family: 'Share Tech Mono', monospace; font-size: 15px; font-weight: 700; color: var(--gold); }
+        .habit-cb { width: 18px; height: 18px; cursor: pointer; appearance: none; -webkit-appearance: none; border: 2px solid var(--border2); background: transparent; display: inline-block; position: relative; transition: all 0.15s; }
+        .habit-cb:checked { background: var(--green); border-color: var(--green); }
+        .habit-cb:checked::after { content: ''; position: absolute; left: 3px; top: 0px; width: 5px; height: 9px; border: 2px solid #fff; border-top: none; border-left: none; transform: rotate(45deg); }
+        .habit-cb.inverted:checked { background: var(--red); border-color: var(--red); }
+        .habit-cb:disabled { opacity: 0.15; cursor: default; }
+        .notes-input { background: transparent; border: none; outline: none; color: var(--text2); font-family: 'Rajdhani', sans-serif; font-size: 11px; width: 100%; min-width: 80px; }
+        .weight-input { background: transparent; border: none; border-bottom: 1px solid var(--border2); outline: none; color: var(--gold); font-family: 'Share Tech Mono', monospace; font-size: 12px; width: 44px; text-align: center; }
+        .habit-icon { display: block; font-size: 13px; margin-bottom: 1px; }
+        .total-label { font-size: 9px; color: var(--text3); display: block; }
+        .total-value { font-family: 'Share Tech Mono', monospace; font-size: 13px; color: var(--gold); }
+        .right-section { padding: 14px 16px; border-bottom: 1px solid var(--border2); }
+        .right-section-title { font-size: 11px; letter-spacing: 3px; color: var(--gold); font-weight: 700; text-transform: uppercase; margin-bottom: 12px; text-align: center; padding-bottom: 8px; border-bottom: 1px solid var(--border2); }
+        table.ladder-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        .ladder-table th { font-size: 9px; letter-spacing: 2px; color: var(--text3); padding: 4px 5px; border-bottom: 1px solid var(--border2); font-weight: 600; }
+        .ladder-table td { padding: 5px 5px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+        .ladder-table tr.active-level td { background: rgba(240,180,41,0.07); }
+        .lad-lvl { font-family: 'Share Tech Mono', monospace; font-size: 12px; color: var(--text3); font-weight: 700; text-align: center; }
+        .lad-lvl.active { color: var(--gold); }
+        .lad-title { font-weight: 700; font-size: 12px; color: var(--text2); white-space: nowrap; }
+        .lad-title.active { color: var(--gold2); }
+        .lad-xp { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--text3); text-align: right; white-space: nowrap; }
+        .lad-xp.active { color: var(--cyan); }
+        .lad-quote { font-size: 10px; color: var(--text3); font-style: italic; }
+        .drag-handle { cursor: grab; color: var(--text3); font-size: 13px; user-select: none; }
+        .ladder-table tr.dragging { opacity: 0.3; }
+        table.ref-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        .ref-table th { font-size: 9px; letter-spacing: 2px; color: var(--text3); padding: 4px 5px; border-bottom: 1px solid var(--border2); font-weight: 600; }
+        .ref-table td { padding: 5px 5px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+        .ref-habit-name { font-weight: 700; font-size: 12px; color: var(--text); display: flex; align-items: center; gap: 5px; flex-wrap: wrap; }
+        .ref-core { font-size: 8px; color: var(--gold); border: 1px solid var(--gold); padding: 1px 3px; letter-spacing: 1px; }
+        .ref-inv { font-size: 8px; color: var(--red); border: 1px solid var(--red); padding: 1px 3px; letter-spacing: 1px; }
+        .ref-xp-input { background: transparent; border: none; border-bottom: 1px solid var(--border2); outline: none; color: var(--green2); font-family: 'Share Tech Mono', monospace; font-size: 13px; width: 40px; text-align: center; }
+        .ref-pen-input { background: transparent; border: none; border-bottom: 1px solid var(--border2); outline: none; color: var(--red); font-family: 'Share Tech Mono', monospace; font-size: 13px; width: 40px; text-align: center; }
+        .ref-notes-input { background: transparent; border: none; outline: none; color: var(--text3); font-family: 'Rajdhani', sans-serif; font-size: 11px; width: 100%; }
+        ::-webkit-scrollbar { height: 5px; width: 5px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+    </style>
 </head>
 <body>
 
 <div class="top-banner">THE EXILE'S DAILY TRACKER v1.0 &nbsp;|&nbsp; Past dates only score XP &nbsp;|&nbsp; Log weight each morning after toilet, before eating &nbsp;|&nbsp; Sunday is REST for selected habits &nbsp;|&nbsp; 7-day rolling average is the truth</div>
 
 <div class="xp-bar">
-  <div class="xp-stat"><span style="font-size:18px">⚡</span><div><div class="xp-label">Total XP</div><div class="xp-value" id="total-xp">0</div></div></div>
-  <div class="xp-divider"></div>
-  <div class="xp-stat"><span style="font-size:18px">🎖</span><div><div class="xp-label">Level</div><div class="xp-value" id="level-val">1</div></div></div>
-  <div class="xp-divider"></div>
-  <div class="xp-stat"><span style="font-size:18px">✖</span><div><div class="xp-label">Title</div><div class="title-value" id="title-val">The Condemned</div></div></div>
+    <div class="xp-stat"><span style="font-size:18px">⚡</span><div><div class="xp-label">Total XP</div><div class="xp-value" id="total-xp">0</div></div></div>
+    <div class="xp-divider"></div>
+    <div class="xp-stat"><span style="font-size:18px">🎖</span><div><div class="xp-label">Level</div><div class="xp-value" id="level-val">1</div></div></div>
+    <div class="xp-divider"></div>
+    <div class="xp-stat"><span style="font-size:18px">✖</span><div><div class="xp-label">Title</div><div class="title-value" id="title-val">The Condemned</div></div></div>
     <button onclick="logout()" style="margin-left:auto; background:transparent; border:1px solid var(--border2); color:var(--text3); font-family:'Oswald',sans-serif; font-size:12px; letter-spacing:2px; padding:6px 16px; cursor:pointer;">LOGOUT</button>
 </div>
 
 <div class="xp-sub">
-  <div class="quote" id="title-quote">Cast out. Nothing to your name. This is where it begins.</div>
-  <div class="next">Next level at <span id="next-xp">300</span> &nbsp;|&nbsp; Still need: <span id="need-xp">300</span> XP</div>
+    <div class="quote" id="title-quote">Cast out. Nothing to your name. This is where it begins.</div>
+    <div class="next">Next level at <span id="next-xp">300</span> &nbsp;|&nbsp; Still need: <span id="need-xp">300</span> XP</div>
 </div>
 
 <div class="main-layout">
-  <div class="left-col">
-    <div class="body-mission">
-      <div class="section-title">⚖ BODY MISSION</div>
-      <div class="body-stats">
-        <div class="body-stat"><span class="body-stat-label">Start</span><span class="body-stat-value white">106.5</span><span class="body-stat-unit">kg</span></div>
-        <div class="body-stat"><span class="body-stat-label">Current</span><span class="body-stat-value" id="current-weight">106.5</span><span class="body-stat-unit">kg</span></div>
-        <div class="body-stat"><span class="body-stat-label">Lost</span><span class="body-stat-value green" id="lost-kg">0</span><span class="body-stat-unit">kg</span></div>
-        <div class="body-stat"><span class="body-stat-label">Target</span><span class="body-stat-value target">87.5</span><span class="body-stat-unit">kg</span></div>
-        <div class="body-stat"><span class="body-stat-label">7-Day Avg</span><span class="body-stat-value white" id="avg-weight">106.5</span><span class="body-stat-unit">kg avg</span></div>
-      </div>
-      <div class="progress-row">
-        <span class="progress-label">Progress</span>
-        <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
-        <span class="progress-pct" id="progress-pct">0.0% to goal</span>
-      </div>
-      <div class="body-tips"><span>🎯 Target: lose 19kg</span><span>~6 months at 0.5–1kg/week</span><span>Weigh after toilet, before eating</span></div>
+    <div class="left-col">
+        <div class="body-mission">
+            <div class="section-title">⚖ BODY MISSION</div>
+            <div class="body-stats">
+                <div class="body-stat"><span class="body-stat-label">Start</span><span class="body-stat-value white">106.5</span><span class="body-stat-unit">kg</span></div>
+                <div class="body-stat"><span class="body-stat-label">Current</span><span class="body-stat-value" id="current-weight">106.5</span><span class="body-stat-unit">kg</span></div>
+                <div class="body-stat"><span class="body-stat-label">Lost</span><span class="body-stat-value green" id="lost-kg">0</span><span class="body-stat-unit">kg</span></div>
+                <div class="body-stat"><span class="body-stat-label">Target</span><span class="body-stat-value target">87.5</span><span class="body-stat-unit">kg</span></div>
+                <div class="body-stat"><span class="body-stat-label">7-Day Avg</span><span class="body-stat-value white" id="avg-weight">106.5</span><span class="body-stat-unit">kg avg</span></div>
+            </div>
+            <div class="progress-row">
+                <span class="progress-label">Progress</span>
+                <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+                <span class="progress-pct" id="progress-pct">0.0% to goal</span>
+            </div>
+            <div class="body-tips"><span>🎯 Target: lose 19kg</span><span>~6 months at 0.5–1kg/week</span><span>Weigh after toilet, before eating</span></div>
+        </div>
+        <div class="table-wrapper">
+            <table class="habit-table">
+                <thead><tr id="table-header"></tr></thead>
+                <tbody id="table-body"></tbody>
+            </table>
+        </div>
     </div>
-    <div class="table-wrapper">
-      <table class="habit-table">
-        <thead><tr id="table-header"></tr></thead>
-        <tbody id="table-body"></tbody>
-      </table>
-    </div>
-  </div>
 
-  <div class="right-col">
-    <div class="right-section">
-      <div class="right-section-title">⚔ Ascendancy Ladder</div>
-      <table class="ladder-table">
-        <thead><tr><th></th><th>Lvl</th><th>Title</th><th style="text-align:right">XP Range</th><th>Quote</th></tr></thead>
-        <tbody id="ladder-body"></tbody>
-      </table>
+    <div class="right-col">
+        <div class="right-section">
+            <div class="right-section-title">⚔ Ascendancy Ladder</div>
+            <table class="ladder-table">
+                <thead><tr><th></th><th>Lvl</th><th>Title</th><th style="text-align:right">XP Range</th><th>Quote</th></tr></thead>
+                <tbody id="ladder-body"></tbody>
+            </table>
+        </div>
+        <div class="right-section">
+            <div class="right-section-title">📋 Habit Reference</div>
+            <table class="ref-table">
+                <thead><tr><th>Habit</th><th style="text-align:center">+XP</th><th style="text-align:center">-Pen</th><th>Notes</th></tr></thead>
+                <tbody id="ref-body"></tbody>
+            </table>
+        </div>
     </div>
-    <div class="right-section">
-      <div class="right-section-title">📋 Habit Reference</div>
-      <table class="ref-table">
-        <thead><tr><th>Habit</th><th style="text-align:center">+XP</th><th style="text-align:center">-Pen</th><th>Notes</th></tr></thead>
-        <tbody id="ref-body"></tbody>
-      </table>
-    </div>
-  </div>
 </div>
 
 <script>
     const token = localStorage.getItem('token');
     if (!token) window.location.href = '/login.html';
+
     async function apiFetch(url, options = {}) {
-    const res = await fetch(url, {
-        ...options,
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer ' + token,
-            ...options.headers
-        }
-    });
-    if (res.status === 401) {
-        localStorage.removeItem('token');
-        window.location.href = '/login.html';
-    }
-    return res;
-}
-let HABITS = [];
-
-let LEVELS = [
-  {xp:0,title:'The Condemned',quote:'Cast out. Nothing to your name.'},
-  {xp:300,title:'The Exile',quote:'You accepted the sentence. You walk anyway.'},
-  {xp:1000,title:'The Survivor',quote:'You did not break. You still exist.'},
-  {xp:3000,title:'The Relentless',quote:'Pain is just another morning.'},
-  {xp:7500,title:'The Awakened',quote:'No fog this time. You earn a scar.'},
-  {xp:17500,title:'The Ascendant',quote:'You are no longer who you were.'},
-  {xp:35000,title:'The Harbinger',quote:'Others feel the change before they understand it.'},
-  {xp:70000,title:'The Architect',quote:'Work until yourself.'},
-  {xp:120000,title:'The Provider',quote:'The house. The family. The freedom.'},
-  {xp:200000,title:'The Legend',quote:'You came from nothing. You built everything.'}
-];
-
-const DAYS=['SUN','MON','TUE','WED','THU','FRI','SAT'];
-let state={}, dragSrc=null;
-function logout() {
-  localStorage.removeItem('token');
-  window.location.href = '/login.html';
-}
-function getWeekDates(){
-  const today=new Date(), sun=new Date(today);
-  sun.setDate(today.getDate()-today.getDay());
-  return Array.from({length:7},(_,i)=>{const d=new Date(sun);d.setDate(sun.getDate()+i);return d;});
-}
-function formatDate(d){return d.toLocaleDateString('en-GB',{day:'numeric',month:'short'});}
-function getDayXP(dk){
-  const ds=state[dk]||{};
-  return HABITS.reduce((s,h)=>{
-    if(ds[h.key]===true) return s+(h.inverted?-h.penalty:h.xp);
-    if(ds[h.key]===false) return s+(h.inverted?h.xp:-h.penalty);
-    return s;
-  },0);
-}
-function getTotalXP(){
-  const today=new Date();today.setHours(23,59,59);
-  return getWeekDates().reduce((s,d)=>d<=today?s+Math.max(0,getDayXP(d.toISOString().split('T')[0])):s,0);
-}
-function getLevel(xp){let l=0;LEVELS.forEach((v,i)=>{if(xp>=v.xp)l=i;});return l;}
-
-function updateXPBar(){
-  const xp=getTotalXP(),lvl=getLevel(xp),next=LEVELS[lvl+1]||LEVELS[lvl];
-  document.getElementById('total-xp').textContent=xp;
-  document.getElementById('level-val').textContent=lvl+1;
-  document.getElementById('title-val').textContent=LEVELS[lvl].title;
-  document.getElementById('title-quote').textContent=LEVELS[lvl].quote;
-  document.getElementById('next-xp').textContent=next.xp;
-  document.getElementById('need-xp').textContent=Math.max(0,next.xp-xp);
-  buildLadder();
-}
-
-function updateBodyMission(){
-  const ws=getWeekDates().map(d=>parseFloat(state[d.toISOString().split('T')[0]+'_weight']||0)).filter(w=>w>0);
-  const cur=ws.length?ws[ws.length-1]:106.5;
-  const avg=ws.length?(ws.reduce((a,b)=>a+b,0)/ws.length).toFixed(1):106.5;
-  const lost=(106.5-cur).toFixed(1);
-  const pct=Math.max(0,((106.5-cur)/(106.5-87.5)*100)).toFixed(1);
-  document.getElementById('current-weight').textContent=cur.toFixed(1);
-  document.getElementById('lost-kg').textContent=lost;
-  document.getElementById('avg-weight').textContent=avg;
-  document.getElementById('progress-pct').textContent=pct+'% to goal';
-  document.getElementById('progress-fill').style.width=Math.min(100,pct)+'%';
-}
-
-function buildLadder(){
-  const xp=getTotalXP(),curLvl=getLevel(xp);
-  const tbody=document.getElementById('ladder-body');
-  tbody.innerHTML='';
-  LEVELS.forEach((l,i)=>{
-    const isActive=i===curLvl;
-    const nextXp=LEVELS[i+1]?LEVELS[i+1].xp.toLocaleString():'∞';
-    const tr=document.createElement('tr');
-    tr.className=isActive?'active-level':'';
-    tr.draggable=true;
-    tr.dataset.index=i;
-    tr.innerHTML=`<td><span class="drag-handle">⠿</span></td><td class="lad-lvl ${isActive?'active':''}">${i+1}</td><td class="lad-title ${isActive?'active':''}">${l.title}</td><td class="lad-xp ${isActive?'active':''}">${l.xp.toLocaleString()}→${nextXp}</td><td class="lad-quote">${l.quote}</td>`;
-    tr.addEventListener('dragstart',e=>{dragSrc=i;tr.classList.add('dragging');e.dataTransfer.effectAllowed='move';});
-    tr.addEventListener('dragend',()=>tr.classList.remove('dragging'));
-    tr.addEventListener('dragover',e=>e.preventDefault());
-    tr.addEventListener('drop',e=>{
-      e.preventDefault();
-      if(dragSrc!==null&&dragSrc!==i){
-        const m=LEVELS.splice(dragSrc,1)[0];LEVELS.splice(i,0,m);
-        dragSrc=null;buildLadder();updateXPBar();
-      }
-    });
-    tbody.appendChild(tr);
-  });
-}
-
-function buildRefTable(){
-  const tbody=document.getElementById('ref-body');
-  tbody.innerHTML='';
-  HABITS.forEach((h,i)=>{
-    const tr=document.createElement('tr');
-    tr.innerHTML=`<td><div class="ref-habit-name"><span>${h.icon}</span><span>${h.name}</span>${h.core?'<span class="ref-core">CORE</span>':''}${h.inverted?'<span class="ref-inv">INV</span>':''}</div></td><td style="text-align:center"><input class="ref-xp-input" type="number" value="${h.xp}" data-idx="${i}" data-field="xp"></td><td style="text-align:center"><input class="ref-pen-input" type="number" value="${h.penalty}" data-idx="${i}" data-field="penalty"></td><td><input class="ref-notes-input" type="text" value="${h.notes}" data-idx="${i}" placeholder="notes..."></td>`;
-    tbody.appendChild(tr);
-  });
-  tbody.querySelectorAll('.ref-xp-input,.ref-pen-input').forEach(inp=>{
-    inp.addEventListener('change',e=>{
-      HABITS[parseInt(e.target.dataset.idx)][e.target.dataset.field]=parseInt(e.target.value)||0;
-      buildTableHeader();buildTable();updateXPBar();
-    });
-  });
-  tbody.querySelectorAll('.ref-notes-input').forEach(inp=>{
-    inp.addEventListener('change',e=>{HABITS[parseInt(e.target.dataset.idx)].notes=e.target.value;});
-  });
-}
-async function loadEntriesForDate(dateKey) {
-    const res = await apiFetch(`/api/logs/${dateKey}/entries`);
-    if (res.ok) {
-        const entries = await res.json();
-        if (!state[dateKey]) state[dateKey] = {};
-        entries.forEach(entry => {
-            state[dateKey][entry.habit.id] = entry.completed;
+        const res = await fetch(url, {
+            ...options,
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token, ...options.headers }
         });
+        if (res.status === 401) { localStorage.removeItem('token'); window.location.href = '/login.html'; }
+        return res;
     }
-}
-async function loadHabits() {
-    const res = await apiFetch('/api/habits');
-    if (res.ok) {
-        const data = await res.json();
-        HABITS = data.map(h => ({
-            key: h.id,
-            icon: '📋',
-            name: h.name,
-            xp: h.xpReward,
-            penalty: h.xpPenalty,
-            rest: h.isSundayRest,
-            core: h.isCore,
-            inverted: h.isInverted,
-            notes: h.description || ''
+
+    let HABITS = [];
+    let LEVELS = [
+      {xp:0,title:'The Condemned',quote:'Cast out. Nothing to your name.'},
+      {xp:300,title:'The Exile',quote:'You accepted the sentence. You walk anyway.'},
+      {xp:1000,title:'The Survivor',quote:'You did not break. You still exist.'},
+      {xp:3000,title:'The Relentless',quote:'Pain is just another morning.'},
+      {xp:7500,title:'The Awakened',quote:'No fog this time. You earn a scar.'},
+      {xp:17500,title:'The Ascendant',quote:'You are no longer who you were.'},
+      {xp:35000,title:'The Harbinger',quote:'Others feel the change before they understand it.'},
+      {xp:70000,title:'The Architect',quote:'Work until yourself.'},
+      {xp:120000,title:'The Provider',quote:'The house. The family. The freedom.'},
+      {xp:200000,title:'The Legend',quote:'You came from nothing. You built everything.'}
+    ];
+
+    const DAYS=['SUN','MON','TUE','WED','THU','FRI','SAT'];
+    let state={}, dragSrc=null;
+
+    function logout() { localStorage.removeItem('token'); window.location.href = '/login.html'; }
+
+    function getWeekDates(){
+      const today=new Date(), sun=new Date(today);
+      sun.setDate(today.getDate()-today.getDay());
+      return Array.from({length:7},(_,i)=>{const d=new Date(sun);d.setDate(sun.getDate()+i);return d;});
+    }
+
+    function formatDate(d){return d.toLocaleDateString('en-GB',{day:'numeric',month:'short'});}
+
+    function getDayXP(dk){
+      const ds=state[dk]||{};
+      return HABITS.reduce((s,h)=>{
+        if(ds[h.key]===true) return s+(h.inverted?-h.penalty:h.xp);
+        if(ds[h.key]===false) return s+(h.inverted?h.xp:-h.penalty);
+        return s;
+      },0);
+    }
+
+    function getTotalXP(){
+      const today=new Date();today.setHours(23,59,59);
+      return getWeekDates().reduce((s,d)=>d<=today?s+Math.max(0,getDayXP(d.toISOString().split('T')[0])):s,0);
+    }
+
+    function getLevel(xp){let l=0;LEVELS.forEach((v,i)=>{if(xp>=v.xp)l=i;});return l;}
+
+    function updateXPBar(){
+      const xp=getTotalXP(),lvl=getLevel(xp),next=LEVELS[lvl+1]||LEVELS[lvl];
+      document.getElementById('total-xp').textContent=xp;
+      document.getElementById('level-val').textContent=lvl+1;
+      document.getElementById('title-val').textContent=LEVELS[lvl].title;
+      document.getElementById('title-quote').textContent=LEVELS[lvl].quote;
+      document.getElementById('next-xp').textContent=next.xp;
+      document.getElementById('need-xp').textContent=Math.max(0,next.xp-xp);
+      buildLadder();
+    }
+
+    function updateBodyMission(){
+      const ws=getWeekDates().map(d=>parseFloat(state[d.toISOString().split('T')[0]+'_weight']||0)).filter(w=>w>0);
+      const cur=ws.length?ws[ws.length-1]:106.5;
+      const avg=ws.length?(ws.reduce((a,b)=>a+b,0)/ws.length).toFixed(1):106.5;
+      const lost=(106.5-cur).toFixed(1);
+      const pct=Math.max(0,((106.5-cur)/(106.5-87.5)*100)).toFixed(1);
+      document.getElementById('current-weight').textContent=cur.toFixed(1);
+      document.getElementById('lost-kg').textContent=lost;
+      document.getElementById('avg-weight').textContent=avg;
+      document.getElementById('progress-pct').textContent=pct+'% to goal';
+      document.getElementById('progress-fill').style.width=Math.min(100,pct)+'%';
+    }
+
+    function buildLadder(){
+      const xp=getTotalXP(),curLvl=getLevel(xp);
+      const tbody=document.getElementById('ladder-body');
+      tbody.innerHTML='';
+      LEVELS.forEach((l,i)=>{
+        const isActive=i===curLvl;
+        const nextXp=LEVELS[i+1]?LEVELS[i+1].xp.toLocaleString():'∞';
+        const tr=document.createElement('tr');
+        tr.className=isActive?'active-level':'';
+        tr.draggable=true;
+        tr.innerHTML=`<td><span class="drag-handle">⠿</span></td><td class="lad-lvl ${isActive?'active':''}">${i+1}</td><td class="lad-title ${isActive?'active':''}">${l.title}</td><td class="lad-xp ${isActive?'active':''}">${l.xp.toLocaleString()}→${nextXp}</td><td class="lad-quote">${l.quote}</td>`;
+        tr.addEventListener('dragstart',e=>{dragSrc=i;tr.classList.add('dragging');e.dataTransfer.effectAllowed='move';});
+        tr.addEventListener('dragend',()=>tr.classList.remove('dragging'));
+        tr.addEventListener('dragover',e=>e.preventDefault());
+        tr.addEventListener('drop',e=>{
+          e.preventDefault();
+          if(dragSrc!==null&&dragSrc!==i){const m=LEVELS.splice(dragSrc,1)[0];LEVELS.splice(i,0,m);dragSrc=null;buildLadder();updateXPBar();}
+        });
+        tbody.appendChild(tr);
+      });
+    }
+
+    function buildRefTable(){
+      const tbody=document.getElementById('ref-body');
+      tbody.innerHTML='';
+      HABITS.forEach((h,i)=>{
+        const tr=document.createElement('tr');
+        tr.innerHTML=`<td><div class="ref-habit-name"><span>${h.icon}</span><span>${h.name}</span>${h.core?'<span class="ref-core">CORE</span>':''}${h.inverted?'<span class="ref-inv">INV</span>':''}</div></td><td style="text-align:center"><input class="ref-xp-input" type="number" value="${h.xp}" data-idx="${i}" data-field="xp"></td><td style="text-align:center"><input class="ref-pen-input" type="number" value="${h.penalty}" data-idx="${i}" data-field="penalty"></td><td><input class="ref-notes-input" type="text" value="${h.notes}" data-idx="${i}" placeholder="notes..."></td>`;
+        tbody.appendChild(tr);
+      });
+      tbody.querySelectorAll('.ref-xp-input,.ref-pen-input').forEach(inp=>{
+        inp.addEventListener('change',e=>{
+          HABITS[parseInt(e.target.dataset.idx)][e.target.dataset.field]=parseInt(e.target.value)||0;
+          buildTableHeader();buildTable();updateXPBar();
+        });
+      });
+      tbody.querySelectorAll('.ref-notes-input').forEach(inp=>{
+        inp.addEventListener('change',e=>{HABITS[parseInt(e.target.dataset.idx)].notes=e.target.value;});
+      });
+    }
+
+    async function loadEntriesForDate(dateKey) {
+        const res = await apiFetch(`/api/logs/${dateKey}/entries`);
+        if (res.ok) {
+            const entries = await res.json();
+            if (!state[dateKey]) state[dateKey] = {};
+            entries.forEach(entry => { state[dateKey][entry.habit.id] = entry.completed; });
+        }
+    }
+
+    async function loadWeightForDate(dateKey) {
+        const res = await apiFetch(`/api/logs/${dateKey}`);
+        if (res.ok) {
+            const log = await res.json();
+            if (log.weightKg) state[dateKey + '_weight'] = log.weightKg;
+        }
+    }
+
+    async function loadHabits() {
+        const res = await apiFetch('/api/habits');
+        if (res.ok) {
+            const data = await res.json();
+            HABITS = data.map(h => ({
+                key: h.id, icon: '📋', name: h.name,
+                xp: h.xpReward, penalty: h.xpPenalty,
+                rest: h.isSundayRest, core: h.isCore,
+                inverted: h.isInverted, notes: h.description || ''
+            }));
+        }
+    }
+
+    function buildTableHeader(){
+      const tr=document.getElementById('table-header');
+      tr.innerHTML=`<th class="col-date">📅 Date</th><th>Day</th>${HABITS.map(h=>`<th><span class="habit-icon">${h.icon}</span>${h.name.split(' ')[0]}</th>`).join('')}<th class="col-xp">⚡ XP</th><th>📝 Notes</th><th>Wt</th><th>7d</th>`;
+    }
+
+    function buildTable(){
+      const dates=getWeekDates();
+      const today=new Date();today.setHours(23,59,59);
+      const tbody=document.getElementById('table-body');
+      tbody.innerHTML='';
+      dates.forEach(d=>{
+        const di=d.getDay(),isSun=di===0,isSat=di===6,isPast=d<=today;
+        const dk=d.toISOString().split('T')[0],ds=state[dk]||{};
+        const tr=document.createElement('tr');
+        tr.className=isSun?'row-sun':isSat?'row-sat':'row-weekday';
+        let html=`<td class="cell-date">${formatDate(d)}</td><td><span class="cell-day ${isSun?'sunday':isSat?'saturday':''}">${DAYS[di]}</span></td>`;
+        HABITS.forEach(h=>{
+          if(isSun&&h.rest){html+=`<td><span class="rest-badge">REST</span></td>`;return;}
+          html+=`<td><input type="checkbox" class="habit-cb ${h.inverted?'inverted':''}" data-date="${dk}" data-habit="${h.key}" ${ds[h.key]?'checked':''} ${!isPast?'disabled':''}></td>`;
+        });
+        html+=`<td>${isPast?`<span class="cell-xp">${getDayXP(dk)}</span>`:''}</td>`;
+        html+=`<td><input class="notes-input" type="text" value="${state[dk+'_notes']||''}" data-date="${dk}"></td>`;
+        html+=`<td><input class="weight-input" type="number" step="0.1" value="${state[dk+'_weight']||''}" data-date="${dk}" placeholder="—"></td>`;
+        html+=`<td style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text3)">—</td>`;
+        tr.innerHTML=html;tbody.appendChild(tr);
+      });
+      const total=document.createElement('tr');
+      total.className='row-total';
+      const wkXP=dates.reduce((s,d)=>s+Math.max(0,getDayXP(d.toISOString().split('T')[0])),0);
+      let th=`<td colspan="2" style="text-align:left;padding-left:10px;font-size:10px;letter-spacing:2px;color:var(--text3)">WK TOTAL</td>`;
+      HABITS.forEach(h=>{
+        const c=dates.filter(d=>(state[d.toISOString().split('T')[0]]||{})[h.key]).length;
+        th+=`<td><span class="total-value">${c}</span><span class="total-label">✓</span></td>`;
+      });
+      th+=`<td><span class="total-value">${wkXP}</span><span class="total-label">XP</span></td><td colspan="3" style="color:var(--text3);font-size:10px">wk avg</td>`;
+      total.innerHTML=th;tbody.appendChild(total);
+      attachListeners();
+    }
+
+    function attachListeners(){
+      document.querySelectorAll('.habit-cb').forEach(cb=>{
+        cb.addEventListener('change', async e => {
+          const {date, habit} = e.target.dataset;
+          if (!state[date]) state[date] = {};
+          state[date][habit] = e.target.checked;
+          await apiFetch(`/api/logs/${date}`, {
+              method: 'POST',
+              body: JSON.stringify({ habitCompletions: { [habit]: e.target.checked } })
+          });
+          buildTable(); updateXPBar();
+        });
+      });
+
+      document.querySelectorAll('.weight-input').forEach(inp=>{
+        inp.addEventListener('change', async e=>{
+          const date = e.target.dataset.date;
+          const weight = parseFloat(e.target.value)||0;
+          state[date+'_weight'] = weight;
+          await apiFetch(`/api/logs/${date}/weight`, {
+              method: 'PATCH',
+              body: JSON.stringify({ weightKg: weight })
+          });
+          updateBodyMission(); buildTable();
+        });
+      });
+
+      document.querySelectorAll('.notes-input').forEach(inp=>{
+        inp.addEventListener('change',e=>{state[e.target.dataset.date+'_notes']=e.target.value;});
+      });
+    }
+
+    loadHabits().then(async () => {
+        const dates = getWeekDates();
+        await Promise.all(dates.map(d => {
+            const dk = d.toISOString().split('T')[0];
+            return Promise.all([loadEntriesForDate(dk), loadWeightForDate(dk)]);
         }));
-    }
-}
-function buildTableHeader(){
-  const tr=document.getElementById('table-header');
-  tr.innerHTML=`<th class="col-date">📅 Date</th><th>Day</th>${HABITS.map(h=>`<th><span class="habit-icon">${h.icon}</span>${h.name.split(' ')[0]}</th>`).join('')}<th class="col-xp">⚡ XP</th><th>📝 Notes</th><th>Wt</th><th>7d</th>`;
-}
-
-function buildTable(){
-  const dates=getWeekDates();
-  const today=new Date();today.setHours(23,59,59);
-  const tbody=document.getElementById('table-body');
-  tbody.innerHTML='';
-  dates.forEach(d=>{
-    const di=d.getDay(),isSun=di===0,isSat=di===6,isPast=d<=today;
-    const dk=d.toISOString().split('T')[0],ds=state[dk]||{};
-    const tr=document.createElement('tr');
-    tr.className=isSun?'row-sun':isSat?'row-sat':'row-weekday';
-    let html=`<td class="cell-date">${formatDate(d)}</td><td><span class="cell-day ${isSun?'sunday':isSat?'saturday':''}">${DAYS[di]}</span></td>`;
-    HABITS.forEach(h=>{
-      if(isSun&&h.rest){html+=`<td><span class="rest-badge">REST</span></td>`;return;}
-      html+=`<td><input type="checkbox" class="habit-cb ${h.inverted?'inverted':''}" data-date="${dk}" data-habit="${h.key}" ${ds[h.key]?'checked':''} ${!isPast?'disabled':''}></td>`;
+        buildTableHeader();
+        buildTable();
+        buildLadder();
+        buildRefTable();
+        updateXPBar();
+        updateBodyMission();
     });
-    html+=`<td>${isPast?`<span class="cell-xp">${getDayXP(dk)}</span>`:''}</td>`;
-    html+=`<td><input class="notes-input" type="text" value="${state[dk+'_notes']||''}" data-date="${dk}"></td>`;
-    html+=`<td><input class="weight-input" type="number" step="0.1" value="${state[dk+'_weight']||''}" data-date="${dk}" placeholder="—"></td>`;
-    html+=`<td style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text3)">—</td>`;
-    tr.innerHTML=html;tbody.appendChild(tr);
-  });
-  const total=document.createElement('tr');
-  total.className='row-total';
-  const wkXP=dates.reduce((s,d)=>s+Math.max(0,getDayXP(d.toISOString().split('T')[0])),0);
-  let th=`<td colspan="2" style="text-align:left;padding-left:10px;font-size:10px;letter-spacing:2px;color:var(--text3)">WK TOTAL</td>`;
-  HABITS.forEach(h=>{
-    const c=dates.filter(d=>(state[d.toISOString().split('T')[0]]||{})[h.key]).length;
-    th+=`<td><span class="total-value">${c}</span><span class="total-label">✓</span></td>`;
-  });
-  th+=`<td><span class="total-value">${wkXP}</span><span class="total-label">XP</span></td><td colspan="3" style="color:var(--text3);font-size:10px">wk avg</td>`;
-  total.innerHTML=th;tbody.appendChild(total);
-  attachListeners();
-}
-
-function attachListeners(){
-  document.querySelectorAll('.habit-cb').forEach(cb=>{
-    cb.addEventListener('change', async e => {
-    const {date, habit} = e.target.dataset;
-    if (!state[date]) state[date] = {};
-    state[date][habit] = e.target.checked;
-
-    await apiFetch(`/api/logs/${date}`, {
-        method: 'POST',
-        body: JSON.stringify({
-            habitCompletions: { [habit]: e.target.checked }
-        })
-    });
-
-    buildTable(); updateXPBar();
-});
-  });
-  document.querySelectorAll('.weight-input').forEach(inp=>{
-    inp.addEventListener('change',e=>{
-      state[e.target.dataset.date+'_weight']=parseFloat(e.target.value)||0;
-      updateBodyMission();buildTable();
-    });
-  });
-  document.querySelectorAll('.notes-input').forEach(inp=>{
-    inp.addEventListener('change',e=>{state[e.target.dataset.date+'_notes']=e.target.value;});
-  });
-}
-
-loadHabits().then(async () => {
-    const dates = getWeekDates();
-    await Promise.all(dates.map(d =>
-        loadEntriesForDate(d.toISOString().split('T')[0])
-    ));
-    buildTableHeader();
-    buildTable();
-    buildLadder();
-    buildRefTable();
-    updateXPBar();
-    updateBodyMission();
-});
 </script>
 </body>
 </html>

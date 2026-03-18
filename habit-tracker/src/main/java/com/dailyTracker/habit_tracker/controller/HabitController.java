@@ -24,7 +24,7 @@ public class HabitController {
         return ResponseEntity.status(201).body(habitService.save(habit));
     }
     @DeleteMapping("/{id}")
-    private ResponseEntity deleteHabit(@PathVariable Long id){
+    private ResponseEntity<Void> deleteHabit(@PathVariable Long id){
          habitService.deleteById(id);
          return ResponseEntity.noContent().build();
     }

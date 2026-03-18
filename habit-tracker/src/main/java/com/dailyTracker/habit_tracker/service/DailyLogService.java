@@ -60,4 +60,10 @@ public class DailyLogService {
                 .map(log -> habitEntryRepository.findByDailyLogId(log.getId()))
                 .orElse(List.of());
     }
+    public DailyLog updateWeight(Long userId,LocalDate date, Double weightKg){
+        DailyLog updateLog = getOrCreateLog(userId,date);
+        updateLog.setWeightKg(weightKg);
+        return dailyLogRepository.save(updateLog);
+
+    }
 }
