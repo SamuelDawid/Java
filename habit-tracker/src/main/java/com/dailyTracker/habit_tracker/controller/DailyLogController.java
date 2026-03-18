@@ -4,6 +4,7 @@ import com.dailyTracker.habit_tracker.dto.DailyLogRequest;
 import com.dailyTracker.habit_tracker.model.DailyLog;
 import com.dailyTracker.habit_tracker.model.HabitEntry;
 import com.dailyTracker.habit_tracker.service.DailyLogService;
+import com.dailyTracker.habit_tracker.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,25 +18,36 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class DailyLogController {
     private final DailyLogService dailyLogService;
+    private final UserService userService;
 
     @GetMapping("/{date}/entries")
-    public ResponseEntity<List<HabitEntry>> getEntries(@PathVariable LocalDate date) {
-        return ResponseEntity.ok(dailyLogService.getEntriesForDate(1L, date));
-    }
-    @GetMapping("/{date}")
-    private ResponseEntity<DailyLog> getDailyLog(@PathVariable LocalDate date){
-        return ResponseEntity.ok(dailyLogService.getOrCreateLog(1L,date));
+    public ResponseEntity<List<HabitEntry>> getEntries(@PathVariable LocalDate date,@RequestHeader("Authorization") String authHeader) throws Exception{
+            Long userId = userService.getUserIdFromToken(authHeader.substring(7)).orElseThrow(() -> new Exception("Invalid Token"));
+            return ResponseEntity.ok(dailyLogService.getEntriesForDate(userId, date));
 
     }
-    @PostMapping("/{date}")
-    public ResponseEntity<Void> submitDailyHabits(@PathVariable LocalDate date, @RequestBody DailyLogRequest request){
-         dailyLogService.submitHabits(1L,date,request.getHabitCompletions());
-         return ResponseEntity.noContent().build();
+
+    @GetMapping("/{date}")
+    private ResponseEntity<DailyLog> getDailyLog(@PathVariable LocalDate date,@RequestHeader("Authorization") String authHeader) throws Exception {
+            Long userId = userService.getUserIdFromToken(authHeader.substring(7)).orElseThrow(() -> new Exception("Invalid Token"));
+            return ResponseEntity.ok(dailyLogService.getOrCreateLog(userId, date));
+
+
     }
-    @PatchMapping("/{date}/weight")
-    public ResponseEntity<Void> saveWeight(@RequestBody Map<String,Double> weightMap,@PathVariable LocalDate date) {
-        dailyLogService.updateWeight(1L,date,weightMap.get("weightKg"));
+
+    @PostMapping("/{date}")
+    public ResponseEntity<Void> submitDailyHabits(@PathVariable LocalDate date, @RequestBody DailyLogRequest request, @RequestHeader("Authorization") String authHeader) throws Exception {
+        Long userId = userService.getUserIdFromToken(authHeader.substring(7)).orElseThrow(() -> new Exception("Invalid Token"));
+        dailyLogService.submitHabits(userId, date, request.getHabitCompletions());
         return ResponseEntity.noContent().build();
+
+    }
+
+    @PatchMapping("/{date}/weight")
+    public ResponseEntity<Void> saveWeight(@RequestBody Map<String, Double> weightMap, @PathVariable LocalDate date,@RequestHeader("Authorization") String authHeader) throws Exception{
+            Long userId = userService.getUserIdFromToken(authHeader.substring(7)).orElseThrow(() -> new Exception("Invalid Token"));
+            dailyLogService.updateWeight(userId, date, weightMap.get("weightKg"));
+            return ResponseEntity.noContent().build();
 
     }
 }
