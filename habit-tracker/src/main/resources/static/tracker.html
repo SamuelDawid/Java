@@ -168,6 +168,21 @@
 <script>
     const token = localStorage.getItem('token');
     if (!token) window.location.href = '/login.html';
+    async function apiFetch(url, options = {}) {
+    const res = await fetch(url, {
+        ...options,
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token,
+            ...options.headers
+        }
+    });
+    if (res.status === 401) {
+        localStorage.removeItem('token');
+        window.location.href = '/login.html';
+    }
+    return res;
+}
 let HABITS = [
   {key:'wake',icon:'🌅',name:'Wake ≤7:30',xp:10,penalty:5,rest:true,core:true,inverted:false,notes:'Alarm across the room. Sunday: let sleep.'},
   {key:'dog',icon:'🐕',name:'Dog Walk',xp:8,penalty:4,rest:false,core:false,inverted:false,notes:'Every day incl Sunday. Anchor habit.'},
@@ -291,7 +306,23 @@ function buildRefTable(){
     inp.addEventListener('change',e=>{HABITS[parseInt(e.target.dataset.idx)].notes=e.target.value;});
   });
 }
-
+async function loadHabits() {
+    const res = await apiFetch('/api/habits');
+    if (res.ok) {
+        const data = await res.json();
+        HABITS = data.map(h => ({
+            key: h.id,
+            icon: '📋',
+            name: h.name,
+            xp: h.xpReward,
+            penalty: h.xpPenalty,
+            rest: h.isSundayRest,
+            core: h.isCore,
+            inverted: h.isInverted,
+            notes: h.description || ''
+        }));
+    }
+}
 function buildTableHeader(){
   const tr=document.getElementById('table-header');
   tr.innerHTML=`<th class="col-date">📅 Date</th><th>Day</th>${HABITS.map(h=>`<th><span class="habit-icon">${h.icon}</span>${h.name.split(' ')[0]}</th>`).join('')}<th class="col-xp">⚡ XP</th><th>📝 Notes</th><th>Wt</th><th>7d</th>`;
@@ -333,12 +364,20 @@ function buildTable(){
 
 function attachListeners(){
   document.querySelectorAll('.habit-cb').forEach(cb=>{
-    cb.addEventListener('change',e=>{
-      const{date,habit}=e.target.dataset;
-      if(!state[date])state[date]={};
-      state[date][habit]=e.target.checked;
-      buildTable();updateXPBar();
+    cb.addEventListener('change', async e => {
+    const {date, habit} = e.target.dataset;
+    if (!state[date]) state[date] = {};
+    state[date][habit] = e.target.checked;
+
+    await apiFetch(`/api/logs/${date}`, {
+        method: 'POST',
+        body: JSON.stringify({
+            habitCompletions: { [habit]: e.target.checked }
+        })
     });
+
+    buildTable(); updateXPBar();
+});
   });
   document.querySelectorAll('.weight-input').forEach(inp=>{
     inp.addEventListener('change',e=>{
@@ -351,7 +390,14 @@ function attachListeners(){
   });
 }
 
-buildTableHeader();buildTable();buildLadder();buildRefTable();updateXPBar();updateBodyMission();
+loadHabits().then(() => {
+    buildTableHeader();
+    buildTable();
+    buildLadder();
+    buildRefTable();
+    updateXPBar();
+    updateBodyMission();
+});
 </script>
 </body>
 </html>
