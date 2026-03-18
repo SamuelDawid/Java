@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -22,8 +23,8 @@ public class DailyLogService {
     private final HabitRepository habitRepository;
     private final UserRepository userRepository;
 
-    public DailyLog getOrCreateLog(Long userId, LocalDate date){
-        return dailyLogRepository.findByUserIdAndLogDate(userId,date)
+    public DailyLog getOrCreateLog(Long userId, LocalDate date) {
+        return dailyLogRepository.findByUserIdAndLogDate(userId, date)
                 .orElseGet(() -> {
                     User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException("User not found"));
                     DailyLog log = DailyLog.builder()
@@ -35,17 +36,28 @@ public class DailyLogService {
                     return dailyLogRepository.save(log);
                 });
     }
+
     public void submitHabits(Long userId, LocalDate date, Map<Long, Boolean> completions) {
         DailyLog log = getOrCreateLog(userId, date);
         completions.forEach((habitId, completed) -> {
             Habit habit = habitRepository.findById(habitId).orElseThrow();
-            HabitEntry entry = HabitEntry.builder()
-                    .dailyLog(log)
-                    .habit(habit)
-                    .completed(completed)
-                    .xpEarned(completed ? habit.getXpReward() : -habit.getXpPenalty())
-                    .build();
+
+            HabitEntry entry = habitEntryRepository
+                    .findByDailyLog_IdAndHabit_Id(log.getId(), habitId)
+                    .orElse(HabitEntry.builder()
+                            .dailyLog(log)
+                            .habit(habit)
+                            .build());
+
+            entry.setCompleted(completed);
+            entry.setXpEarned(completed ? habit.getXpReward() : -habit.getXpPenalty());
             habitEntryRepository.save(entry);
         });
+    }
+
+    public List<HabitEntry> getEntriesForDate(Long userId, LocalDate date) {
+        return dailyLogRepository.findByUserIdAndLogDate(userId, date)
+                .map(log -> habitEntryRepository.findByDailyLogId(log.getId()))
+                .orElse(List.of());
     }
 }

@@ -183,21 +183,7 @@
     }
     return res;
 }
-let HABITS = [
-  {key:'wake',icon:'🌅',name:'Wake ≤7:30',xp:10,penalty:5,rest:true,core:true,inverted:false,notes:'Alarm across the room. Sunday: let sleep.'},
-  {key:'dog',icon:'🐕',name:'Dog Walk',xp:8,penalty:4,rest:false,core:false,inverted:false,notes:'Every day incl Sunday. Anchor habit.'},
-  {key:'plan',icon:'📋',name:'Daily Plan',xp:10,penalty:5,rest:true,core:false,inverted:false,notes:'1-2 things to do today. Off Sunday.'},
-  {key:'java',icon:'☕',name:'Java ≥2h',xp:18,penalty:10,rest:true,core:false,inverted:false,notes:'Most valuable. Off Sunday.'},
-  {key:'sb',icon:'💻',name:'Spring Boot',xp:15,penalty:7,rest:true,core:false,inverted:false,notes:'Separate from Java study. Off Sunday.'},
-  {key:'gym',icon:'🏋',name:'Gym 1+ set',xp:15,penalty:7,rest:false,core:false,inverted:false,notes:'Even 1 set counts.'},
-  {key:'snack',icon:'🥗',name:'Snack Prep',xp:6,penalty:4,rest:false,core:false,inverted:false,notes:'Prep planned snacks before evening.'},
-  {key:'crisps',icon:'🚫',name:'No Crisps',xp:15,penalty:7,rest:false,core:true,inverted:false,notes:'Core. Biggest single weight habit.'},
-  {key:'cal',icon:'📊',name:'Cal Track',xp:10,penalty:5,rest:false,core:false,inverted:false,notes:'Track calories. REST on deload week.'},
-  {key:'clean',icon:'🧹',name:'Cleaning',xp:5,penalty:2,rest:false,core:false,inverted:false,notes:'Aim 3x per week.'},
-  {key:'scrn',icon:'🌙',name:'Scrn ≤9:30',xp:10,penalty:5,rest:false,core:false,inverted:false,notes:'PC shut 9:30.'},
-  {key:'slp',icon:'😴',name:'Sleep ≤11',xp:10,penalty:5,rest:false,core:true,inverted:false,notes:'Core. Everything improves with sleep.'},
-  {key:'game',icon:'🎮',name:'No Game Study',xp:13,penalty:25,rest:false,core:false,inverted:true,notes:'INVERTED: checked = gamed during study = -25 XP.'}
-];
+let HABITS = [];
 
 let LEVELS = [
   {xp:0,title:'The Condemned',quote:'Cast out. Nothing to your name.'},
@@ -306,6 +292,16 @@ function buildRefTable(){
     inp.addEventListener('change',e=>{HABITS[parseInt(e.target.dataset.idx)].notes=e.target.value;});
   });
 }
+async function loadEntriesForDate(dateKey) {
+    const res = await apiFetch(`/api/logs/${dateKey}/entries`);
+    if (res.ok) {
+        const entries = await res.json();
+        if (!state[dateKey]) state[dateKey] = {};
+        entries.forEach(entry => {
+            state[dateKey][entry.habit.id] = entry.completed;
+        });
+    }
+}
 async function loadHabits() {
     const res = await apiFetch('/api/habits');
     if (res.ok) {
@@ -390,7 +386,11 @@ function attachListeners(){
   });
 }
 
-loadHabits().then(() => {
+loadHabits().then(async () => {
+    const dates = getWeekDates();
+    await Promise.all(dates.map(d =>
+        loadEntriesForDate(d.toISOString().split('T')[0])
+    ));
     buildTableHeader();
     buildTable();
     buildLadder();

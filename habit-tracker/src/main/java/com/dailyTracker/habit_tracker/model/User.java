@@ -1,5 +1,6 @@
 package com.dailyTracker.habit_tracker.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -22,6 +23,7 @@ public class User {
     private Long totalXp;
     @Column(unique = true,nullable = false)
     private String userName,email;
+    @JsonIgnore
     private String passwordHash;
     private Double startWeight,targetWeight;
     @CreationTimestamp
