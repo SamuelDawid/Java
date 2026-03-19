@@ -1,6 +1,9 @@
 const token = localStorage.getItem('token');
 if (!token) window.location.href = '/login.html';
 
+// ─── CONSTANTS ────────────────────────────────────────────────
+const BEARER_PREFIX_LENGTH = 7;
+
 // ─── API HELPER ───────────────────────────────────────────────
 async function apiFetch(url, options = {}) {
     const res = await fetch(url, {
@@ -21,6 +24,7 @@ async function apiFetch(url, options = {}) {
 // ─── STATE ────────────────────────────────────────────────────
 let HABITS = [];
 let state = {};
+let userProfile = { startWeight: 106.5, targetWeight: 87.5 };
 
 const DAYS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 
@@ -29,7 +33,7 @@ const LEVELS = [
     { xp: 300,    title: 'The Exile',     quote: 'You accepted the sentence. You walk anyway.' },
     { xp: 1000,   title: 'The Survivor',  quote: 'You did not break. You still exist.' },
     { xp: 3000,   title: 'The Relentless',quote: 'Pain is just another morning.' },
-    { xp: 7500,   title: 'The Awakened', quote: 'No fog this time. You earn a scar.' },
+    { xp: 7500,   title: 'The Awakened',  quote: 'No fog this time. You earn a scar.' },
     { xp: 17500,  title: 'The Ascendant', quote: 'You are no longer who you were.' },
     { xp: 35000,  title: 'The Harbinger', quote: 'Others feel the change before they understand it.' },
     { xp: 70000,  title: 'The Architect', quote: 'Work until yourself.' },
@@ -96,15 +100,83 @@ function updateBodyMission() {
     const ws = getWeekDates()
         .map(d => parseFloat(state[d.toISOString().split('T')[0] + '_weight'] || 0))
         .filter(w => w > 0);
-    const cur = ws.length ? ws[ws.length - 1] : 106.5;
-    const avg = ws.length ? (ws.reduce((a, b) => a + b, 0) / ws.length).toFixed(1) : 106.5;
-    const lost = (106.5 - cur).toFixed(1);
-    const pct = Math.max(0, ((106.5 - cur) / (106.5 - 87.5) * 100)).toFixed(1);
+    const cur = ws.length ? ws[ws.length - 1] : userProfile.startWeight;
+    const avg = ws.length ? (ws.reduce((a, b) => a + b, 0) / ws.length).toFixed(1) : userProfile.startWeight;
+    const lost = (userProfile.startWeight - cur).toFixed(1);
+    const range = userProfile.startWeight - userProfile.targetWeight;
+    const pct = range > 0 ? Math.max(0, ((userProfile.startWeight - cur) / range * 100)).toFixed(1) : 0;
+
+    document.getElementById('start-weight-val').textContent = userProfile.startWeight;
+    document.getElementById('target-weight-val').textContent = userProfile.targetWeight;
     document.getElementById('current-weight').textContent = cur.toFixed(1);
     document.getElementById('lost-kg').textContent = lost;
     document.getElementById('avg-weight').textContent = avg;
     document.getElementById('progress-pct').textContent = pct + '% to goal';
     document.getElementById('progress-fill').style.width = Math.min(100, pct) + '%';
+}
+
+// ─── INLINE EDIT ──────────────────────────────────────────────
+function makeEditable(elementId, field) {
+    const el = document.getElementById(elementId);
+    const currentVal = userProfile[field];
+
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.step = '0.1';
+    input.value = currentVal;
+    input.style.cssText = `
+        background: transparent;
+        border: none;
+        border-bottom: 1px solid var(--cyan);
+        outline: none;
+        color: var(--gold);
+        font-family: 'Share Tech Mono', monospace;
+        font-size: 18px;
+        font-weight: 700;
+        width: 70px;
+        text-align: center;
+    `;
+
+    el.replaceWith(input);
+    input.focus();
+    input.select();
+
+    async function saveEdit() {
+        const newVal = parseFloat(input.value);
+        if (!isNaN(newVal) && newVal > 0) {
+            userProfile[field] = newVal;
+            await apiFetch('/api/users/me', {
+                method: 'PATCH',
+                body: JSON.stringify({
+                    startWeight: userProfile.startWeight,
+                    targetWeight: userProfile.targetWeight
+                })
+            });
+        }
+        const span = document.createElement('span');
+        span.id = elementId;
+        span.className = field === 'startWeight' ? 'body-stat-value white editable' : 'body-stat-value target editable';
+        span.textContent = userProfile[field];
+        span.style.cursor = 'pointer';
+        span.title = 'Click to edit';
+        span.onclick = () => makeEditable(elementId, field);
+        input.replaceWith(span);
+        updateBodyMission();
+    }
+
+    input.addEventListener('blur', saveEdit);
+    input.addEventListener('keydown', e => {
+        if (e.key === 'Enter') input.blur();
+        if (e.key === 'Escape') {
+            const span = document.createElement('span');
+            span.id = elementId;
+            span.className = field === 'startWeight' ? 'body-stat-value white editable' : 'body-stat-value target editable';
+            span.textContent = currentVal;
+            span.style.cursor = 'pointer';
+            span.onclick = () => makeEditable(elementId, field);
+            input.replaceWith(span);
+        }
+    });
 }
 
 // ─── TABLE ────────────────────────────────────────────────────
@@ -153,7 +225,6 @@ function buildTable() {
         tbody.appendChild(tr);
     });
 
-    // Total row
     const total = document.createElement('tr');
     total.className = 'row-total';
     const wkXP = dates.reduce((s, d) => s + Math.max(0, getDayXP(d.toISOString().split('T')[0])), 0);
@@ -208,6 +279,15 @@ function attachListeners() {
 }
 
 // ─── API LOADERS ─────────────────────────────────────────────
+async function loadUserProfile() {
+    const res = await apiFetch('/api/users/me');
+    if (res.ok) {
+        const data = await res.json();
+        if (data.startWeight) userProfile.startWeight = data.startWeight;
+        if (data.targetWeight) userProfile.targetWeight = data.targetWeight;
+    }
+}
+
 async function loadHabits() {
     const res = await apiFetch('/api/habits');
     if (res.ok) {
@@ -239,7 +319,9 @@ async function loadWeightForDate(dateKey) {
 }
 
 // ─── INIT ─────────────────────────────────────────────────────
-loadHabits().then(async () => {
+async function init() {
+    await loadUserProfile();
+    await loadHabits();
     const dates = getWeekDates();
     await Promise.all(dates.map(d => {
         const dk = d.toISOString().split('T')[0];
@@ -249,4 +331,10 @@ loadHabits().then(async () => {
     buildTable();
     updateXPBar();
     updateBodyMission();
-});
+
+    // make start and target weight editable
+    document.getElementById('start-weight-val').onclick = () => makeEditable('start-weight-val', 'startWeight');
+    document.getElementById('target-weight-val').onclick = () => makeEditable('target-weight-val', 'targetWeight');
+}
+
+init();

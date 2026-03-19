@@ -9,5 +9,5 @@ import java.util.Optional;
 public interface HabitEntryRepository extends JpaRepository<HabitEntry, Long> {
     List<HabitEntry> findByDailyLogId(Long dailyLogId);
     Optional<HabitEntry> findByDailyLog_IdAndHabit_Id(Long logId, Long habitId);
-
+    List<HabitEntry> findByDailyLog_UserId (Long userId);
 }

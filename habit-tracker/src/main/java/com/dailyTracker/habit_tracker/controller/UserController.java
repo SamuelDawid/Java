@@ -32,7 +32,8 @@ public class UserController {
     private ResponseEntity<UserResponse> loadUserData(@RequestHeader("Authorization") String authHeader) throws Exception {
     Long userId = userService.getUserIdFromToken(authHeader.substring(BEARER_PREFIX_LENGTH)).orElseThrow(() ->new Exception("Invalid Token"));
     User userToFind = userService.findById(userId).orElseThrow(() ->new Exception("No user found"));
-    return ResponseEntity.ok(new UserResponse(userId,userToFind.getUserName(),userToFind.getEmail(),userToFind.getCreatedAt())) ;
+    return ResponseEntity.ok(
+            new UserResponse(userId,userToFind.getUserName(),userToFind.getEmail(),userToFind.getStartWeight(),userToFind.getTargetWeight(),userToFind.getCreatedAt())) ;
 }
 @PatchMapping("/me")
     private ResponseEntity<UpdateUserRequest> updateUserStartingWeightAndTargetWeight(
