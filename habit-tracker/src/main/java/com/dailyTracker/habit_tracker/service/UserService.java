@@ -29,5 +29,11 @@ public class UserService {
     public User save(User user){
         return userRepository.save(user);
     }
+    public User updateUser(Long userId, Double startWeight, Double targetWeight){
+        User userToUpdate = userRepository.findById(userId).orElseThrow(()->new RuntimeException("User not found"));
+        userToUpdate.setStartWeight(startWeight);
+        userToUpdate.setTargetWeight(targetWeight);
+        return userRepository.save(userToUpdate);
+    }
 
 }
