@@ -1,13 +1,14 @@
 package com.dailyTracker.habit_tracker.controller;
 
 
+import com.dailyTracker.habit_tracker.dto.UserResponse;
 import com.dailyTracker.habit_tracker.model.User;
 import com.dailyTracker.habit_tracker.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
+import static com.dailyTracker.habit_tracker.Constants.BEARER_PREFIX_LENGTH;
 
 
 @RequiredArgsConstructor
@@ -25,6 +26,12 @@ public class UserController {
     private ResponseEntity<User> createUser(@RequestBody User user){
     //return ResponseEntity.created(URI).body(user);
     return ResponseEntity.status(201).body(userService.save(user));
+}
+@GetMapping("/me")
+    private ResponseEntity<UserResponse> loadUserDate(@RequestHeader("Authorization") String authHeader) throws Exception {
+    Long userId = userService.getUserIdFromToken(authHeader.substring(BEARER_PREFIX_LENGTH)).orElseThrow(() ->new Exception("Invalid Token"));
+    User userToFind = userService.findById(userId).orElseThrow(() ->new Exception("No user found"));
+    return ResponseEntity.ok(new UserResponse(userId,userToFind.getUserName(),userToFind.getEmail(),userToFind.getCreatedAt())) ;
 }
 }
 

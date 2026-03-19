@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-
+import static com.dailyTracker.habit_tracker.Constants.BEARER_PREFIX_LENGTH;
 @RestController
 @RequestMapping("/api/logs")
 @RequiredArgsConstructor
@@ -22,14 +22,14 @@ public class DailyLogController {
 
     @GetMapping("/{date}/entries")
     public ResponseEntity<List<HabitEntry>> getEntries(@PathVariable LocalDate date,@RequestHeader("Authorization") String authHeader) throws Exception{
-            Long userId = userService.getUserIdFromToken(authHeader.substring(7)).orElseThrow(() -> new Exception("Invalid Token"));
+            Long userId = userService.getUserIdFromToken(authHeader.substring(BEARER_PREFIX_LENGTH)).orElseThrow(() -> new Exception("Invalid Token"));
             return ResponseEntity.ok(dailyLogService.getEntriesForDate(userId, date));
 
     }
 
     @GetMapping("/{date}")
     private ResponseEntity<DailyLog> getDailyLog(@PathVariable LocalDate date,@RequestHeader("Authorization") String authHeader) throws Exception {
-            Long userId = userService.getUserIdFromToken(authHeader.substring(7)).orElseThrow(() -> new Exception("Invalid Token"));
+            Long userId = userService.getUserIdFromToken(authHeader.substring(BEARER_PREFIX_LENGTH)).orElseThrow(() -> new Exception("Invalid Token"));
             return ResponseEntity.ok(dailyLogService.getOrCreateLog(userId, date));
 
 
@@ -37,7 +37,7 @@ public class DailyLogController {
 
     @PostMapping("/{date}")
     public ResponseEntity<Void> submitDailyHabits(@PathVariable LocalDate date, @RequestBody DailyLogRequest request, @RequestHeader("Authorization") String authHeader) throws Exception {
-        Long userId = userService.getUserIdFromToken(authHeader.substring(7)).orElseThrow(() -> new Exception("Invalid Token"));
+        Long userId = userService.getUserIdFromToken(authHeader.substring(BEARER_PREFIX_LENGTH)).orElseThrow(() -> new Exception("Invalid Token"));
         dailyLogService.submitHabits(userId, date, request.getHabitCompletions());
         return ResponseEntity.noContent().build();
 
