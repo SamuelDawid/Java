@@ -293,7 +293,7 @@ async function loadHabits() {
     if (res.ok) {
         const data = await res.json();
         HABITS = data.map(h => ({
-            key: h.id, icon: '📋', name: h.name,
+            key: h.id, icon: '', name: h.name,
             xp: h.xpReward, penalty: h.xpPenalty,
             rest: h.isSundayRest, core: h.isCore,
             inverted: h.isInverted, notes: h.description || ''

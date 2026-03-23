@@ -45,7 +45,7 @@ public class DailyLogController {
 
     @PatchMapping("/{date}/weight")
     public ResponseEntity<Void> saveWeight(@RequestBody Map<String, Double> weightMap, @PathVariable LocalDate date,@RequestHeader("Authorization") String authHeader) throws Exception{
-            Long userId = userService.getUserIdFromToken(authHeader.substring(7)).orElseThrow(() -> new Exception("Invalid Token"));
+            Long userId = userService.getUserIdFromToken(authHeader.substring(BEARER_PREFIX_LENGTH)).orElseThrow(() -> new Exception("Invalid Token"));
             dailyLogService.updateWeight(userId, date, weightMap.get("weightKg"));
             return ResponseEntity.noContent().build();
 
