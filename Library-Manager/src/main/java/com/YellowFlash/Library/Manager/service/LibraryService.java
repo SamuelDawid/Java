@@ -1,49 +1,45 @@
 package com.YellowFlash.Library.Manager.service;
 
+import com.YellowFlash.Library.Manager.Exceptions.*;
 import com.YellowFlash.Library.Manager.model.Book;
+import com.YellowFlash.Library.Manager.model.BorrowLog;
+import com.YellowFlash.Library.Manager.model.Member;
 import com.YellowFlash.Library.Manager.repository.BookRepository;
+import com.YellowFlash.Library.Manager.repository.BorrowLogRepository;
+import com.YellowFlash.Library.Manager.repository.MemberRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 @AllArgsConstructor
 public class LibraryService {
     private final BookRepository bookRepository;
-    private final HashSet<Long> IdLog;
+    private final BorrowLogRepository borrowLogRepository;
+    private final MemberRepository memberRepository;
+
+    public List<BorrowLog> getBorrowHistory() {
+        return borrowLogRepository.findAllByOrderByTimeStampDesc();
+    }
 
     // Dodaje książkę, loguje info: "Dodano książkę: {title}"
     public Book addBook(String title, String author, String isbn) {
-
-        return new Book(
-                generateId(),
-                title,
-                author,
-                isbn,
-                true,
-                LocalDate.now()
-        );
+        Book book = Book.builder()
+                .title(title)
+                .author(author)
+                .isbn(isbn)
+                .build();
+        log.info("Book added {}", title);
+        return bookRepository.save(book);
 
     }
 
-    private Long generateId() {
-        while (true) {
-            var rnd = new Random().nextLong(0, 999999999);
-            if (!IdLog.contains(rnd)) {
-                IdLog.add(rnd);
-                return rnd;
-            }
-        }
-    }
-
-    // Zwraca wszystkie książki
     public List<Book> getAllBooks() {
         return bookRepository.findAll().stream().toList();
     }
@@ -53,35 +49,53 @@ public class LibraryService {
         return bookRepository.findByAuthorIgnoreCase(author).stream().toList();
     }
 
+    public Map<String, Long> authorStats() {
+        return bookRepository.findAll().stream()
+                .collect(Collectors.groupingBy(Book::getAuthor, Collectors.counting()));
+    }
+
     // Zwraca dostępne książki
     public List<Book> getAvailableBooks() {
         return bookRepository.findByIsAvailableTrue().stream().toList();
     }
 
-    // Wypożycza książkę — jeśli nie istnieje rzuć RuntimeException("Nie znaleziono: " +
-// Jeśli niedostępna rzuć RuntimeException("Książka już wypożyczona")
-// Ustaw available=false, zapisz, zaloguj
     @Transactional
-    public Book borrowBook(Long id) throws RuntimeException {
-        Book bookToBorrow = bookRepository.findById(id).orElseThrow(() -> new RuntimeException("Book not found"));
-        if (!bookToBorrow.isAvailable()) throw new RuntimeException("Book is borrowed");
+    public Book borrowBook(Long id, Long memberId) throws RuntimeException {
+        Book bookToBorrow = bookRepository.findById(id).orElseThrow(() -> new BookNotFoundException(id));
+        if (!bookToBorrow.isAvailable()) throw new BookNotAvailableException(bookToBorrow.getTitle());
         bookToBorrow.setAvailable(false);
+        Member memberToFind = memberRepository.findById(memberId).orElseThrow(
+                () -> new MemberNotFoundException(memberId));
+        if (!memberToFind.isActive()) throw new MemberDeactivatedException(memberId);
+
+        borrowLogRepository.save(BorrowLog.builder().member(memberToFind)
+                .book(bookToBorrow)
+                .action(BorrowLog.BorrowAction.Borrowed).build());
+        log.info("Book {} has been borrowed by {}", bookToBorrow.getTitle(), memberToFind.getFullName());
         return bookToBorrow;
     }
 
-    // Zwraca książkę — jeśli available=true rzuć RuntimeException("Książka nie jest wyp
-// Ustaw available=true, zapisz, zaloguj
     @Transactional
-    public Book returnBook(Long id) {
-        Book bookToBorrow = bookRepository.findById(id).orElseThrow(() -> new RuntimeException("Book not found"));
-        if (bookToBorrow.isAvailable()) throw new RuntimeException("Book is available");
+    public Book returnBook(Long id,Long memberId) {
+        Book bookToBorrow = bookRepository.findById(id).orElseThrow(() -> new BookNotFoundException(id));
+        if (bookToBorrow.isAvailable()) throw new BookNotBorrowedException(bookToBorrow.getTitle());
         bookToBorrow.setAvailable(true);
+        Member memberToFind = memberRepository.findById(memberId).orElseThrow(
+                () -> new MemberNotFoundException(memberId));
+        if (!memberToFind.isActive()) throw new MemberDeactivatedException(memberId);
+        borrowLogRepository.save(BorrowLog.builder()
+                .member(memberToFind)
+                .book(bookToBorrow)
+                .action(BorrowLog.BorrowAction.Returned).build());
+        log.info("Book {} has been returned", bookToBorrow.getTitle());
         return bookToBorrow;
     }
 
-    // Usuwa książkę — jeśli nie istnieje rzuć RuntimeException
     public void deleteBook(Long id) {
-        Book bookToDelete = bookRepository.findById(id).orElseThrow(() -> new RuntimeException("Book not found"));
+        Book bookToDelete = bookRepository.findById(id).orElseThrow(() -> new BookNotFoundException(id));
+        if (!bookToDelete.isAvailable())
+            throw new BookNotAvailableException(bookToDelete.getTitle() + " can not be deleted");
+        log.info("Book {} deleted ", bookToDelete.getTitle());
         bookRepository.delete(bookToDelete);
 
     }

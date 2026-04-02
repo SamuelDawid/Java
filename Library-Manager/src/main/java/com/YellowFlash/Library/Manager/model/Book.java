@@ -22,6 +22,7 @@ public class Book {
     String title,author;
     @Column(unique = true)
     String isbn;
+    @Builder.Default
     private boolean isAvailable = true;
     LocalDate addedAt;
 
@@ -30,12 +31,6 @@ public class Book {
         this.addedAt = LocalDate.now();
     }
 
-    private void printBook(Book b) {
-        System.out.printf("[%d] %s — %s | ISBN: %s | %s%n",
-                b.getId(),
-                b.getTitle(),
-                b.getAuthor(),
-                b.getIsbn() != null ? b.getIsbn() : "brak",
-                b.isAvailable() ? "✓ dostępna" : "✗ wypożyczona");
-}
+
+
 }
