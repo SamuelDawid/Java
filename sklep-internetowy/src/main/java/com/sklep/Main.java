@@ -11,6 +11,9 @@ import com.sklep.order.Order;
 import com.sklep.order.OrderService;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class Main {
@@ -19,6 +22,8 @@ public class Main {
         ProductCatalog productCatalog = new ProductCatalog();
         Cart cart = new Cart();
         OrderService orderService = new OrderService();
+
+
 
 
         try {

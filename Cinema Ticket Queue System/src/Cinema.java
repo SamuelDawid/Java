@@ -1,44 +1,21 @@
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 public class Cinema {
 
     static void main() {
-        List<Movie> movies = new ArrayList<>();
-        movies.add(new Movie("Inception", 148));
-        movies.add(new Movie("The Lion King", 88));
-        movies.add(new Movie("Interstellar", 169));
-        movies.add(new Movie("Toy Story", 81));
-        movies.add(new Movie("The Dark Knight", 152));
-        movies.add(new Movie("Finding Nemo", 100));
 
-        Queue<Person> personQueue = new LinkedList<>();
-        personQueue.offer(new Person("Marek", "Kowalski", 34));
-        personQueue.offer(new Person("Anna", "Wiśniewska", 16));
-        personQueue.offer(new Person("Tomasz", "Zając", 45));
-        personQueue.offer(new Person("Karolina", "Nowak", 17));
-        personQueue.offer(new Person("Piotr", "Wójcik", 28));
-        personQueue.offer(new Person("Zofia", "Kamińska", 15));
-
-        servePerson(personQueue);
-        servePerson(personQueue);
-        servePerson(personQueue);
-        personQueue.offer(addPerson());
-        personQueue.offer(addPerson());
-        personQueue.offer(addPerson());
-        System.out.println("Queue that's left: ");
-        displayQueue(personQueue, (p) -> System.out.println(p.toString()));
-        System.out.println("Remove Minors: ");
-//        displayQueue(personQueue,person -> {
-//            if (person.getAge() >= 18)
-//                System.out.println( person.getFirstName());
-//        } );
-        removeMinors(personQueue);
-        displayQueue(personQueue, (p) -> System.out.println(p.toString()));
-        displayQueue(movies, movie -> {
-            if (movie.getTime() > 120)
-                System.out.println(movie.getTitle());
-        });
+        List<List<Integer>> numbers = Arrays.asList(
+                Arrays.asList(1,2,3),
+                Arrays.asList(4,5),
+                Arrays.asList(6,7,8,9)
+        );
+        int[][] numbers1 = {{1,2,3},{4,5},{6,7,8,9}};
+       List<Integer> EvenNumbers = numbers.stream().flatMap(Collection::stream).filter(integer -> integer % 2 ==0).toList();
+        System.out.println(EvenNumbers);
+        List<Integer> evens = Arrays.stream(numbers1).flatMapToInt(Arrays::stream).filter( value -> value % 2 == 0).boxed().toList();
+        System.out.println(evens);
     }
 
     static Person addPerson() {
