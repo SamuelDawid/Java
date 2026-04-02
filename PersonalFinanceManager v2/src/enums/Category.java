@@ -2,38 +2,42 @@ package enums;
 
 public enum Category {
 
-    SALARY("Salary",TransactionType.INCOME),
-    BONUS("Bonus",TransactionType.INCOME),
-    GIFT("Gift",TransactionType.INCOME),
-    FOOD("Food",TransactionType.EXPENSE),
-    TRANSPORT("Transport",TransactionType.EXPENSE),
-    ENTERTAINMENT("Entertainment",TransactionType.EXPENSE),
-    BILLS("Bills",TransactionType.EXPENSE),
-    SHOPPING("Shopping",TransactionType.EXPENSE),
-    HEALTH("Health",TransactionType.EXPENSE),
-    OTHER("Other",TransactionType.EXPENSE);
+    SALARY("Salary",1,TransactionType.INCOME),
+    BONUS("Bonus",2,TransactionType.INCOME),
+    GIFT("Gift",3,TransactionType.INCOME),
+    FOOD("Food",4,TransactionType.EXPENSE),
+    TRANSPORT("Transport",5,TransactionType.EXPENSE),
+    ENTERTAINMENT("Entertainment",6,TransactionType.EXPENSE),
+    BILLS("Bills",7,TransactionType.EXPENSE),
+    SHOPPING("Shopping",8,TransactionType.EXPENSE),
+    HEALTH("Health",9,TransactionType.EXPENSE),
+    OTHER("Other",10,TransactionType.EXPENSE);
 
-    private String displayName;
-    TransactionType type;
+    private final String displayName;
+    final int order;
+    final TransactionType type;
 
-    Category(String _displayName,TransactionType _type){
-        this.type = _type;
+    Category(String _displayName,int number, TransactionType type){
+        this.order = number;
         this.displayName = _displayName;
+        this.type = type;
     }
 
     public String getDisplayName() {
         return displayName;
     }
 
-    public void setDisplayName(String displayName) {
-        this.displayName = displayName;
+    public int getOrder() {
+        return order;
     }
 
     public TransactionType getType() {
         return type;
     }
 
-    public void setType(TransactionType type) {
-        this.type = type;
+    @Override
+    public String toString() {
+        return order +" "+ displayName;
     }
+
 }

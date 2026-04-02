@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE EXILE'S DAILY TRACKER v1.0</title>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Share+Tech+Mono&family=Oswald:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/tracker.css">
+</head>
+<body>
+
+<div class="top-banner">
+    THE EXILE'S DAILY TRACKER v1.0 &nbsp;|&nbsp;
+    Past dates only score XP &nbsp;|&nbsp;
+    Log weight each morning after toilet, before eating &nbsp;|&nbsp;
+    Sunday is REST for selected habits
+</div>
+
+<div class="xp-bar">
+    <div class="xp-stat">
+        <span style="font-size:18px">⚡</span>
+        <div>
+            <div class="xp-label">Total XP</div>
+            <div class="xp-value" id="total-xp">0</div>
+        </div>
+    </div>
+    <div class="xp-divider"></div>
+    <div class="xp-stat">
+        <span style="font-size:18px">🎖</span>
+        <div>
+            <div class="xp-label">Level</div>
+            <div class="xp-value" id="level-val">1</div>
+        </div>
+    </div>
+    <div class="xp-divider"></div>
+    <div class="xp-stat">
+        <span style="font-size:18px">✖</span>
+        <div>
+            <div class="xp-label">Title</div>
+            <div class="title-value" id="title-val">The Condemned</div>
+        </div>
+    </div>
+    <button class="btn-logout" onclick="logout()">LOGOUT</button>
+</div>
+
+<div class="xp-sub">
+    <div class="quote" id="title-quote">Cast out. Nothing to your name.</div>
+    <div class="next">
+        Next level at <span id="next-xp">300</span>
+        &nbsp;|&nbsp;
+        Still need: <span id="need-xp">300</span> XP
+    </div>
+</div>
+
+<div class="main-layout">
+    <div class="left-col">
+
+        <div class="body-mission">
+            <div class="section-title">⚖ BODY MISSION</div>
+            <div class="body-stats">
+                <div class="body-stat">
+                    <span class="body-stat-label">Start</span>
+                    <span class="body-stat-value white editable" id="start-weight-val" title="Click to edit" style="cursor:pointer">106.5</span>
+                    <span class="body-stat-unit">kg</span>
+                </div>
+                <div class="body-stat">
+                    <span class="body-stat-label">Current</span>
+                    <span class="body-stat-value" id="current-weight">106.5</span>
+                    <span class="body-stat-unit">kg</span>
+                </div>
+                <div class="body-stat">
+                    <span class="body-stat-label">Lost</span>
+                    <span class="body-stat-value green" id="lost-kg">0</span>
+                    <span class="body-stat-unit">kg</span>
+                </div>
+                <div class="body-stat">
+                    <span class="body-stat-label">Target</span>
+                    <span class="body-stat-value target editable" id="target-weight-val" title="Click to edit" style="cursor:pointer">87.5</span>
+                    <span class="body-stat-unit">kg</span>
+                </div>
+                <div class="body-stat">
+                    <span class="body-stat-label">7-Day Avg</span>
+                    <span class="body-stat-value white" id="avg-weight">106.5</span>
+                    <span class="body-stat-unit">kg avg</span>
+                </div>
+            </div>
+            <div class="progress-row">
+                <span class="progress-label">Progress</span>
+                <div class="progress-track">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+                <span class="progress-pct" id="progress-pct">0.0% to goal</span>
+            </div>
+            <div class="body-tips">
+                <span>🎯 Click START or TARGET to edit</span>
+                <span>Weigh after toilet, before eating</span>
+            </div>
+        </div>
+
+        <div class="table-wrapper">
+            <table class="habit-table">
+                <thead><tr id="table-header"></tr></thead>
+                <tbody id="table-body"></tbody>
+            </table>
+        </div>
+
+    </div>
+</div>
+
+<script src="/tracker.js"></script>
+</body>
+</html>

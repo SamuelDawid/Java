@@ -1,10 +1,18 @@
 package service;
 
+import Iterators.TransactionIterator;
 import enums.Category;
-import enums.Months;
+import enums.TransactionType;
 import model.Transaction;
+import model.User;
+import ui.MenuManager;
+
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.function.Function;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 public class TransactionService {
 
@@ -15,69 +23,62 @@ public class TransactionService {
 
     static int transactionID = 1;
     static HashSet<Integer> trackTransactionID = new HashSet<>();
-    public TreeSet<Transaction> sortedTransactions  = new TreeSet<>();
-    Comparator<Transaction> byDate = Comparator.comparing(Transaction::getDate);
-    public TreeSet<Transaction> sortedByDate = new TreeSet<>(byDate);
-    public static int getTransactionID() {
-        return transactionID;
-    }
+    private List<Transaction> allTransactions = new ArrayList<>();
+    MenuManager ui = new MenuManager();
+    Scanner scanner = new Scanner(System.in);
+    //Predicate fields
+    public static Predicate<Transaction> isExpense = transaction -> transaction.type().equals(TransactionType.EXPENSE);
+    public static Predicate<Transaction> isIncome  = transaction -> transaction.type().equals(TransactionType.INCOME);
+    public static Predicate<Transaction> isOverAmount (double amount) {
+            return transaction -> transaction.amount() > amount;
+    }  ;
+    //Function transformations:
+
+    public Function<Transaction,String> extractCategoryName = transaction -> transaction.category().getDisplayName();
+    public Function<Transaction,Double> extractAmount = Transaction::amount;
+    public Function<Transaction,String> formatTransactionCSV = Transaction::formatTransactionCSV;
 
 
-    public ArrayList<Transaction> getTransactionsByUser(String userId,ArrayList<Transaction> transactions) {
-        ArrayList<Transaction> transactionsByID = new ArrayList<>();
-        for (Transaction transaction : transactions) {
-            if (transaction != null && transaction.getUserId().equals(userId)) {
-                transactionsByID.add(transaction);
-            }
-        }
-        return transactionsByID;
+    public List<Transaction> getFilteredTransaction( Predicate<Transaction> filter){
+        List<Transaction> transactionsToReturn = new ArrayList<>();
+        TransactionIterator iterator = new TransactionIterator(allTransactions,filter);
+        while (iterator.hasNext()) transactionsToReturn.add(iterator.next());
+        return transactionsToReturn;
+    }
+    public void displayFilteredTransactions(List<Transaction> transactions, Predicate<Transaction> filter){
+        TransactionIterator iterator = new TransactionIterator(transactions,filter);
+        while (iterator.hasNext())  System.out.println(iterator.next());
+    }
+    public double calculateTotal(List<Transaction> transactions){
+        return transactions.stream()
+                .filter(Objects::nonNull)
+                .mapToDouble(Transaction::amount).sum();
     }
 
-    public ArrayList<Transaction> getTransactionsByMonth(String userId, Months month,ArrayList<Transaction> transactions) {
-        ArrayList<Transaction> transactionsByMonth = new ArrayList<>();
-        for (Transaction transaction : transactions) {
-            if (transaction != null && transaction.getUserId().equals(userId)) {
-                String[] split = transaction.getDate().split("-");
-                if (split[1].equals(month.getNumber())) {
-                    transactionsByMonth.add(transaction);
-                }
-            }
-        }
-        return transactionsByMonth;
-    }
-    public ArrayList<Transaction> getTransactionsByCategory(String userId, Category cat,ArrayList<Transaction> transactions){
-        ArrayList<Transaction> transactionsByCategory = new ArrayList<>();
-        for (Transaction transaction : transactions) {
-            if (transaction != null && transaction.getUserId().equals(userId) && transaction.getCategory().equals(cat)) {
+    public void addTransaction(User currentUser){
+        ui.displayAllTransactionsCategoryMenu();
+        String inputTransactionCategory = scanner.nextLine();
 
-                transactionsByCategory.add(transaction) ;
-            }
-        }
-        return transactionsByCategory;
+        System.out.println("Amount:");
+        String choseAmount = scanner.nextLine();
 
-    }
-    public double calculateTotal(ArrayList<Transaction> transactions){
-        double sum = 0;
-        for(Transaction t : transactions){
-            if(t != null) {
-                sum+= t.getAmount();
-            }
-        }
-        return sum;
-    }
-    public void deleteTransaction(String transactionId,ArrayList<Transaction> transactions){
-    int index = 0;
-    for(int i= 0;i < transactions.size();i++){
-        if(transactions.get(i).getUserId().equals(transactionId))
-            index = i;
+        System.out.println("Date (YYYY-MM-DD):");
+        String choseDate = scanner.nextLine();
 
-    }
-    transactions.remove(index);
+        System.out.println("Description:");
+        String choseDescription = scanner.nextLine();
+        allTransactions.add(
+                new Transaction(generateTransactionID(),
+                        choseDescription,
+                        currentUser.getUserId(),
+                        TransactionType.INCOME,
+                        Category.values()[Integer.parseInt(inputTransactionCategory) - 1],
+                        Double.parseDouble(choseAmount),
+                        LocalDate.parse(choseDate))
+        );
     }
 
     public int generateTransactionID(){
-        // i want this to generate a random number between 100 000 000 and 999 999 999
-
         while (true){
             var rnd = rndTransGen();
             if(!trackTransactionID.contains(rnd)){
@@ -89,6 +90,12 @@ public class TransactionService {
     int rndTransGen(){
         return new Random().nextInt(100000000,999999999);
     }
+    public List<Transaction> getAllTransactions() {
+        return allTransactions;
+    }
 
+    public void setAllTransactions(List<Transaction> allTransactions) {
+        this.allTransactions = allTransactions;
+    }
 
 }

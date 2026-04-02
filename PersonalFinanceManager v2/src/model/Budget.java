@@ -1,29 +1,36 @@
 package model;
 
 import enums.Category;
-import enums.Months;
+
+import java.time.Month;
 
 public class Budget {
-    String budgetId, userId;
+    String  userId;
+    int budgetId;
     Category category;
-    Months month;
-
-
-
+    Month month;
     double monthlyLimit;
 
     @Override
     public String toString() {
-        return "Budget{" +
-                "budgetId='" + budgetId + '\'' +
-                ", userId='" + userId + '\'' +
-                ", month='" + month + '\'' +
-                ", category=" + category +
-                ", monthlyLimit=" + monthlyLimit +
-                '}';
+        return String.format("┌─────────────────────────────┐%n" +
+                        "│  BUDGET DETAILS             │%n" +
+                        "├─────────────────────────────┤%n" +
+                        "│  ID        : %-16s│%n" +
+                        "│  Month     : %-16s│%n" +
+                        "│  Category  : %-16s│%n" +
+                        "│  Limit     : %-16.2f│%n" +
+                        "└─────────────────────────────┘",
+                budgetId,
+                month,
+                category,
+                monthlyLimit);
     }
-
-    public Budget(String budgetId, String userId, Months month, Category category, double monthlyLimit) {
+    public String formatBudgetCSV(){
+        return String.format("%s: $%.2f for %s",
+                category, monthlyLimit, month);
+    }
+    public Budget(int budgetId, String userId, Month month, Category category, double monthlyLimit) {
         this.budgetId = budgetId;
         this.userId = userId;
         this.month = month;
@@ -34,19 +41,19 @@ public class Budget {
         return monthlyLimit - spent ;
 
     }
-    public Months getMonth() {
+    public Month getMonth() {
         return month;
     }
 
-    public void setMonth(Months month) {
+    public void setMonth(Month month) {
         this.month = month;
     }
     //region Setter&Getters
-    public String getBudgetId() {
+    public int getBudgetId() {
         return budgetId;
     }
 
-    public void setBudgetId(String budgetId) {
+    public void setBudgetId(int budgetId) {
         this.budgetId = budgetId;
     }
 

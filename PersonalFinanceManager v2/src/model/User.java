@@ -3,37 +3,32 @@ package model;
 import java.util.Objects;
 
 public class User {
-    private String userId,firstName,lastName,email;
-    public User()
-    {}
-    public User(String userId, String firstName, String lastName, String email) {
+    private String userId,firstName,lastName,email,password;
+    public User(String userId, String firstName, String lastName, String email,String password) {
         this.userId = userId;
+        this.password = password;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
     }
+    public User(){}
     // we are skipping the user ID in equals to avoid same users with different id
-    @Override
-    public boolean equals(Object o) {
-        if (!(o instanceof User user)) return false;
-        return Objects.equals(firstName, user.firstName) && Objects.equals(lastName, user.lastName) && Objects.equals(email, user.email);
-    }
 
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(userId, firstName, lastName, email);
-    }
     @Override
     public String toString() {
-        return "User{" +
-                "userId='" + userId + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", email='" + email + '\'' +
-                '}';
+        return String.format("┌─────────────────────────────┐%n" +
+                        "│  USER PROFILE               │%n" +
+                        "├─────────────────────────────┤%n" +
+                        "│  ID    : %-19s│%n" +
+                        "│  Name  : %-19s│%n" +
+                        "│  Email : %-19s│%n" +
+                        "└─────────────────────────────┘",
+                userId, firstName + " " + lastName, email);
     }
-
+    public String formatUserCSV() {
+        return String.format("%s,%s,%s,%s,%s",
+                userId,password,firstName,lastName,email);
+    }
     public String getUserId() {
         return userId;
     }
@@ -60,6 +55,10 @@ public class User {
 
     public String getEmail() {
         return email;
+    }
+
+    public String getPassword() {
+        return password;
     }
 
     public void setEmail(String email) {

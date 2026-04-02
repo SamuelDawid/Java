@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>THE EXILE'S DAILY TRACKER — Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Share+Tech+Mono&family=Oswald:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/login.css">
+</head>
+<body>
+
+  <div class="logo">
+    <div class="logo-title">The Exile's Daily Tracker</div>
+    <div class="logo-line"></div>
+    <div class="logo-sub">v1.0 — forge your discipline</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title" id="card-title">⚔ Access Terminal</div>
+
+    <div class="error-msg" id="error-msg"></div>
+    <div class="success-msg" id="success-msg"></div>
+
+    <!-- LOGIN FORM -->
+    <div id="login-form">
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-input" type="email" id="login-email" placeholder="your@email.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-input" type="password" id="login-password" placeholder="••••••••">
+      </div>
+      <button class="btn-primary" onclick="handleLogin()">Enter ⚡</button>
+      <div class="divider"><span>or</span></div>
+      <button class="btn-secondary" onclick="showRegister()">Create Account</button>
+    </div>
+
+    <!-- REGISTER FORM -->
+    <div id="register-form" style="display:none">
+      <div class="form-group">
+        <label class="form-label">Username</label>
+        <input class="form-input" type="text" id="reg-username" placeholder="exile_name">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-input" type="email" id="reg-email" placeholder="your@email.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-input" type="password" id="reg-password" placeholder="••••••••">
+      </div>
+      <button class="btn-primary" onclick="handleRegister()">Begin The Journey ⚡</button>
+      <div class="divider"><span>or</span></div>
+      <button class="btn-secondary" onclick="showLogin()">Back to Login</button>
+    </div>
+
+    <div class="toggle-link" id="toggle-link">
+      No account? <a onclick="showRegister()">Create one</a>
+    </div>
+  </div>
+
+  <script src="/login.js"></script>
+</body>
+</html>

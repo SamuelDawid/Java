@@ -1,0 +1,11 @@
+package com.dailyTracker.habit_tracker.repository;
+
+import com.dailyTracker.habit_tracker.model.DailyLog;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.time.LocalDate;
+import java.util.Optional;
+
+public interface DailyLogRepository extends JpaRepository<DailyLog, Long> {
+    Optional<DailyLog> findByUserIdAndLogDate(Long userId, LocalDate logDate);
+}

@@ -1,63 +1,33 @@
 package ui;
 
+import enums.Category;
+
+import java.time.Month;
+
 public class MenuManager {
 
     //Methods:
     public void displayMainMenu() {
-        System.out.println("Main Menu");
         System.out.println("""
+                === Main Menu ===
                 1. Add Transaction, \s
-                2. View Transactions,\s
-                3. Set Budget,\s
+                2. View Transactions options,\s
+                3. View Budget options,\s
                 4. View Reports,\s
                 5. Save & Exit.""");
     }
 
-    public void displayTransactionMenu() {
-        System.out.println("=== Add Transaction ===");
-        System.out.println("""
-                1. Income \s
-                2. Expense \s
-                Select type:
-                """);
 
-    }
+    public void displayAllTransactionsCategoryMenu() {
+        System.out.println("=== Transaction Type ===");
+        for (Category cat : Category.values())
+            System.out.println(cat);
 
-    public void displayIncomeMenu() {
-        System.out.println("=== Income Type ===");
-        System.out.println("""
-                1. Salary \s
-                2. Gift \s
-                3. Bonus \s
-                Select type:
-                """);
-
-    }
-
-    public void displayExpenseMenu() {
-        System.out.println("=== Type ===");
-        System.out.println("""
-                1. Food \s
-                2. Transport \s
-                3. Entertainment \s
-                4. Bills \s
-                5. Shopping \s
-                6. Health \s
-                7. Other \s
-                Select type:
-                """);
     }
 
     public void displayMonthsOfYear() {
-        System.out.println("""
-                1. January  | 7. July\s
-                2. February | 8. August \s
-                3. March    | 9. September\s
-                4. April    | 10. October\s
-                5. May      | 11. November\s
-                6. June     | 12. December\s
-                 type month:
-                """);
+        for (Month month : Month.values())
+            System.out.println(month.getValue() + ". " + month);
     }
 
     public void displayBudgetMenu() {
@@ -67,13 +37,13 @@ public class MenuManager {
                 1. Set Category Budget
                 2. View All Budgets
                 3. Check Budget Status
-                4. Back to Main Menu
+                4. Delete Budget
+                5. Back to Main Menu
                 Choice:
                 """);
     }
 
     public void displayReportMenu() {
-
         System.out.println("""
                 === Report Menu ===
                 1. Generate Monthly Report
@@ -84,12 +54,27 @@ public class MenuManager {
                 """);
     }
 
-    public void displayUserMenu() {
-        System.out.println("=== Select or Add User ===");
+    public void displayTransactionsMenu() {
         System.out.println("""
-                1.Select Existing User, \s
-                2.Add New User
+                === Transactions Menu ===
+                1.View all transactions, \s
+                2.View only FOOD transactions \s
+                3.View only transactions over $50\s
+                4.View only transactions from specific month\s
+                5.View only transactions from last 3 months\s
                 """);
+    }
+
+    public void displayLoginMenu() {
+        System.out.println("┌─────────────────────────────┐");
+        System.out.println("│       FINANCE MANAGER       │");
+        System.out.println("├─────────────────────────────┤");
+        System.out.println("│  1. Login                   │");
+        System.out.println("│  2. Register                │");
+        System.out.println("│  3. Exit                    │");
+        System.out.println("└─────────────────────────────┘");
+        System.out.print("  Select: ");
+        ;
     }
 
 }

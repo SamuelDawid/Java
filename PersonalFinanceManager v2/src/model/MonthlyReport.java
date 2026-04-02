@@ -1,13 +1,13 @@
 package model;
 
-import enums.Months;
+import java.time.Month;
 
 public class MonthlyReport {
     String userId;
-    Months month;
+    Month month;
     double totalIncome,totalExpenses,savings;
 
-    public MonthlyReport(String userId, Months month, double totalIncome, double totalExpenses, double savings) {
+    public MonthlyReport(String userId, Month month, double totalIncome, double totalExpenses, double savings) {
         this.userId = userId;
         this.month = month;
         this.totalIncome = totalIncome;
@@ -37,11 +37,11 @@ public class MonthlyReport {
         this.userId = userId;
     }
 
-    public Months getMonth() {
+    public Month getMonth() {
         return month;
     }
 
-    public void setMonth(Months month) {
+    public void setMonth(Month month) {
         this.month = month;
     }
 
